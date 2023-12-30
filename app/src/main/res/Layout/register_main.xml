@@ -33,7 +33,7 @@
         android:textAppearance="@android:style/TextAppearance.Material.Display1" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/profileimageView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:src="@drawable/profile_pic_placeholder"/>
@@ -44,13 +44,17 @@
         android:layout_height="wrap_content"
         android:text="Pick profile picture" />
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
     <EditText
         android:id="@+id/editTextFirstName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="First Name*"
+        android:hint="First Name*"
         android:textSize="20dp"/>
 
     <EditText
@@ -59,7 +63,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="text"
-        android:text="Last Name*"
+        android:hint="Last Name*"
         android:textSize="20dp"/>
 
     <EditText
@@ -87,8 +91,12 @@
         android:inputType="textPassword"
         android:textSize="20dp"/>
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
+
     <Button
-        android:id="@+id/LogInButton"
+        android:id="@+id/SignUpButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/mybutton"
@@ -97,13 +105,15 @@
         android:textSize="20dp"/>
 
     <TextView
-        android:id="@+id/ForgotPassTextView"
+        android:id="@+id/LogInTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="#FFFF7B00"
+        android:textStyle="bold"
         android:textAlignment="center"
         android:text="Already have a account?"
-        android:paddingTop="40dp"
-        android:textSize="20dp"/>
+        android:paddingTop="30dp"
+        android:textSize="20dp"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
 </LinearLayout>

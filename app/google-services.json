@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711842062382",
+    "project_id": "watchit-16750",
+    "storage_bucket": "watchit-16750.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711842062382:android:2be17f1316abdb4aedffbf",
+        "android_client_info": {
+          "package_name": "com.example.watchit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpjn5efeIBInTyMYVO27AJ2FmOCjK7K5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
