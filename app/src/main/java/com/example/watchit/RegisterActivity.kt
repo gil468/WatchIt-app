@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -56,6 +57,7 @@ class RegisterActivity : ComponentActivity() {
         logintextView.setOnClickListener {
             val intent = Intent(this@RegisterActivity, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         auth = Firebase.auth
@@ -73,21 +75,18 @@ class RegisterActivity : ComponentActivity() {
             val password = passwordEditText.text.toString().trim()
             val confirmPassword = confirmPasswordEditText.text.toString().trim()
 
-            if (firstName.isEmpty()) firstNameEditText.error = "First name cannot be empty"
-            else if (lastName.isEmpty()) lastNameEditText.error = "Last name cannot be empty"
-            else if (email.isEmpty()) emailEditText.error = "Email cannot be empty"
-            else if (password.isEmpty()) passwordEditText.error = "Password cannot be empty"
-            else if (confirmPassword.isEmpty()) confirmPasswordEditText.error = "Confirm password cannot be empty"
-            else {
+            val syntaxChecksResult = validateUserRegistration(firstName, lastName, email, password, confirmPassword)
+
+            if (syntaxChecksResult) {
                 auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener({
                     val user = auth.currentUser
                     val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName("$firstName $lastName").build()
                     user?.updateProfile(profileUpdates)?.addOnCompleteListener{
-                        profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
-                            Log.d("Succes", "User updated Successfully")
-                        } else {
-                            Log.d("Fail", "User updated Failed")
-                        }
+                            profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
+                        Log.d("Succes", "User updated Successfully")
+                    } else {
+                        Log.d("Fail", "User updated Failed")
+                    }
                     }
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT).show()
 //                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
@@ -97,8 +96,70 @@ class RegisterActivity : ComponentActivity() {
                 })
             }
         }
-
     }
+
+    private fun validateUserRegistration(
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ): Boolean {
+        // Basic checks
+        if (firstName.isEmpty()) {
+            firstNameEditText.error = "First name cannot be empty"
+            return false
+        }
+
+        if (lastName.isEmpty()) {
+            lastNameEditText.error = "Last name cannot be empty"
+            return false
+        }
+        if (email.isEmpty()) {
+            emailEditText.error = "Email cannot be empty"
+            return false
+        }
+        if (password.isEmpty()) {
+            passwordEditText.error = "Password cannot be empty"
+            return false
+        }
+        if (confirmPassword.isEmpty()) {
+            confirmPasswordEditText.error = "Confirm password cannot be empty"
+            return false
+        }
+
+        // Advanced checks
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailEditText.error = "Invalid email format"
+            return false
+        }
+        if (password.length < 6) {
+            passwordEditText.error = "Password must be at least 6 characters"
+            return false
+        }
+        if (!password.any { it.isUpperCase() }) {
+            passwordEditText.error =
+                "Password must contain at least one uppercase letter"
+            return false
+        }
+        if (!password.any { it.isLowerCase() }) {
+            passwordEditText.error = "Password must contain at least one lowercase letter."
+            return false
+        }
+        if (!password.any { it.isDigit() }) {
+            passwordEditText.error = "Password must contain at least one digit"
+            return false
+        }
+        if (password != confirmPassword) {
+            confirmPasswordEditText.error = "Passwords do not match."
+            return false
+        }
+        // All checks passed
+        return true
+    }
+
+//    data class ValidationResult(val isValid: Boolean, val errorMessage: String)
+
 
     private fun pickImage() {
         val intent = Intent(MediaStore.ACTION_PICK_IMAGES)

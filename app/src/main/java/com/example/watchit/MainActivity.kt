@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
         registertextView.setOnClickListener {
             val intent = Intent(this@MainActivity, RegisterActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         auth = Firebase.auth
@@ -58,23 +59,16 @@ class MainActivity : ComponentActivity() {
         logInButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
+            val syntaxChecksResult = validateUserRegistration(email, password)
 
-            if (!email.isEmpty() && EMAIL_ADDRESS.matcher(email).matches()){
-                if (!password.isEmpty()) {
-                    auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-                        Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
+            if (syntaxChecksResult) {
+                auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+                    Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
 //                        val intent = Intent(this@MainActivity, ForgotPasswordActivity::class.java)
 //                        startActivity(intent)
-                    }.addOnFailureListener({
-                        Toast.makeText(this@MainActivity, "Your password or Email is incorrect!", Toast.LENGTH_SHORT).show()
-                    })
-                } else {
-                    passwordEditText.error = "Password cannot be empty"
-                }
-            } else if (email.isEmpty()) {
-                emailEditText.error = "Email cannot be empty"
-            } else {
-                emailEditText.error = "Please enter your email"
+                }.addOnFailureListener({
+                    Toast.makeText(this@MainActivity, "Your Email or Password is incorrect!", Toast.LENGTH_SHORT).show()
+                })
             }
         }
 
@@ -118,5 +112,25 @@ class MainActivity : ComponentActivity() {
         exception?.message?.let { errorMessage ->
             println("Error: $errorMessage")
         }
+    }
+
+    private fun validateUserRegistration(
+        email: String,
+        password: String
+    ): Boolean {
+        // Basic checks
+        if (email.isEmpty()) {
+            emailEditText.error = "Email cannot be empty"
+            return false
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailEditText.error = "Invalid email format"
+            return false
+        }
+        if (password.isEmpty()) {
+            passwordEditText.error = "Password cannot be empty"
+            return false
+        }
+        return true
     }
 }
