@@ -66,23 +66,4 @@ class ForgotPasswordActivity : ComponentActivity() {
         }
         return true
     }
-
-    private fun checkIfEmailExists(email: String) {
-        auth.fetchSignInMethodsForEmail(email)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val signInMethods = task.result?.signInMethods
-                    if (signInMethods.isNullOrEmpty()) {
-                        // Email is not registered
-                        // You can handle this case accordingly
-                    } else {
-                        // Email is registered
-                        // You can handle this case accordingly
-                    }
-                } else {
-                    // An error occurred while checking the email
-                    // You can handle this case accordingly
-                }
-            }
-    }
 }
