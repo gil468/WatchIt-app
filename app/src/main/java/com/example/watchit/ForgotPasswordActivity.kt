@@ -3,21 +3,27 @@ package com.example.watchit
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.tasks.await
 
 class ForgotPasswordActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var emailEditText: EditText
     private lateinit var resetPasswordButton: Button
+    private val db = Firebase.firestore
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,17 +36,23 @@ class ForgotPasswordActivity : ComponentActivity() {
 
         resetPasswordButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
-            val syntaxChecksResult = validateUserRegistration(email)
+            val syntaxChecksResult = validateUserEmail(email)
 
-            if (syntaxChecksResult) {
-                auth.sendPasswordResetEmail(email).addOnSuccessListener ({
-                    Toast.makeText(this@ForgotPasswordActivity, "Reset Password link has been sent", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@ForgotPasswordActivity, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }).addOnFailureListener({
-                    Toast.makeText(this@ForgotPasswordActivity, "Error: " + it.message, Toast.LENGTH_SHORT).show()
-                })
+            db.collection("Users").whereEqualTo("email", email).get().addOnSuccessListener { documents ->
+                if(documents.isEmpty) {
+                    Toast.makeText(this@ForgotPasswordActivity, "This Email does not exist", Toast.LENGTH_SHORT).show()
+                } else if (syntaxChecksResult) {
+                    auth.sendPasswordResetEmail(email).addOnSuccessListener ({
+                        Toast.makeText(this@ForgotPasswordActivity, "Reset Password link has been sent", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@ForgotPasswordActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }).addOnFailureListener({
+                        Toast.makeText(this@ForgotPasswordActivity, "Error: " + it.message, Toast.LENGTH_SHORT).show()
+                    })
+                }
+            }.addOnFailureListener{ exception ->
+                Log.d("Fail", exception.message.toString())
             }
         }
 
@@ -52,7 +64,7 @@ class ForgotPasswordActivity : ComponentActivity() {
         }
     }
 
-    private fun validateUserRegistration(
+    private fun validateUserEmail(
         email: String
     ): Boolean {
         // Basic checks

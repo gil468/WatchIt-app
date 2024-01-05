@@ -45,12 +45,10 @@ class RegisterActivity : ComponentActivity() {
 
         btnPickImage = findViewById(R.id.btnPickImage)
         imageView = findViewById(R.id.profileimageView)
-        registerResult()
-
-        imageView.setImageResource(R.drawable.profile_pic_placeholder)
+        pickImageResult()
 
         btnPickImage.setOnClickListener {
-            pickImage()
+            openGallery()
         }
 
         val logintextView: TextView = findViewById(R.id.LogInTextView)
@@ -82,11 +80,11 @@ class RegisterActivity : ComponentActivity() {
                     val user = auth.currentUser
                     val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName("$firstName $lastName").build()
                     user?.updateProfile(profileUpdates)?.addOnCompleteListener{
-                            profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
+                        profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
                         Log.d("Succes", "User updated Successfully")
-                    } else {
-                        Log.d("Fail", "User updated Failed")
-                    }
+                        } else {
+                            Log.d("Fail", "User updated Failed")
+                        }
                     }
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT).show()
 //                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
@@ -161,12 +159,12 @@ class RegisterActivity : ComponentActivity() {
 //    data class ValidationResult(val isValid: Boolean, val errorMessage: String)
 
 
-    private fun pickImage() {
+    private fun openGallery() {
         val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
         resultLauncher.launch(intent)
     }
 
-    private fun registerResult() {
+    private fun pickImageResult() {
         resultLauncher = registerForActivityResult(
             StartActivityForResult(),
             { result: ActivityResult ->
