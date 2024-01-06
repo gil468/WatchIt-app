@@ -53,8 +53,8 @@ class ForgotPasswordActivity : ComponentActivity() {
             }
         }
 
-        val rememberpasswordtextView: TextView = findViewById(R.id.CreateAccountLinkTextView)
-        rememberpasswordtextView.setOnClickListener {
+        val rememberPasswordTextView: TextView = findViewById(R.id.CreateAccountLinkTextView)
+        rememberPasswordTextView.setOnClickListener {
             val intent = Intent(this@ForgotPasswordActivity, MainActivity::class.java)
             startActivity(intent)
             finish()

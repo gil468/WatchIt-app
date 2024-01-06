@@ -15,7 +15,7 @@
         android:text="WatchIt!"
         android:textAlignment="center"
         android:textColor="#FFFF7B00"
-        android:textSize="40dp"
+        android:textSize="40sp"
         />
 
     <TextView
@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Email:"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textColor="@color/black"/>
 
     <EditText
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:hint="Enter your email address"
         android:inputType="textEmailAddress"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/PasswordTextView"
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:text="Password:"
         android:paddingTop="40dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textColor="@color/black"/>
 
     <EditText
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:hint="Enter your password"
         android:inputType="textPassword"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <Space
         android:layout_width="match_parent"
@@ -74,7 +74,7 @@
         android:background="@drawable/mybutton"
         android:text="Log In"
         android:textColor="#FFFF7B00"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/ForgotPassTextView"
@@ -84,7 +84,7 @@
         android:textAlignment="center"
         android:text="Forgot your password?"
         android:paddingTop="40dp"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/CreateAccountLinkTextView"

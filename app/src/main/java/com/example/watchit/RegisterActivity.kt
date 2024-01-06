@@ -25,7 +25,7 @@ class RegisterActivity : ComponentActivity() {
 
     private lateinit var btnPickImage: Button
     private lateinit var imageView: ImageView
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firstNameEditText: EditText
@@ -43,14 +43,14 @@ class RegisterActivity : ComponentActivity() {
 
         btnPickImage = findViewById(R.id.btnPickImage)
         imageView = findViewById(R.id.profileimageView)
-        pickImageResult()
+        defineImageSelectionCallBack()
 
         btnPickImage.setOnClickListener {
             openGallery()
         }
 
-        val logintextView: TextView = findViewById(R.id.LogInTextView)
-        logintextView.setOnClickListener {
+        val loginTextView: TextView = findViewById(R.id.LogInTextView)
+        loginTextView.setOnClickListener {
             val intent = Intent(this@RegisterActivity, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -75,15 +75,15 @@ class RegisterActivity : ComponentActivity() {
 
             if (syntaxChecksResult) {
                 auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener({
-                    val user = auth.currentUser
-                    val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName("$firstName $lastName").build()
-                    user?.updateProfile(profileUpdates)?.addOnCompleteListener{
-                        profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
-                        Log.d("Succes", "User updated Successfully")
-                        } else {
-                            Log.d("Fail", "User updated Failed")
-                        }
-                    }
+//                    val user = auth.currentUser
+//                    val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName("$firstName $lastName").build()
+//                    user?.updateProfile(profileUpdates)?.addOnCompleteListener{
+//                        profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
+//                        Log.d("Succes", "User updated Successfully")
+//                        } else {
+//                            Log.d("Fail", "User updated Failed")
+//                        }
+//                    }
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT).show()
 //                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
 //                    startActivity(intent)
@@ -154,16 +154,13 @@ class RegisterActivity : ComponentActivity() {
         return true
     }
 
-//    data class ValidationResult(val isValid: Boolean, val errorMessage: String)
-
-
     private fun openGallery() {
         val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
-        resultLauncher.launch(intent)
+        imageSelectionCallBack.launch(intent)
     }
 
-    private fun pickImageResult() {
-        resultLauncher = registerForActivityResult(
+    private fun defineImageSelectionCallBack() {
+        imageSelectionCallBack = registerForActivityResult(
             StartActivityForResult(),
             { result: ActivityResult ->
                 try {

@@ -17,7 +17,7 @@
         android:text="WatchIt!"
         android:textAlignment="center"
         android:textColor="#FFFF7B00"
-        android:textSize="40dp" />
+        android:textSize="40sp" />
 
     <Space
         android:layout_width="match_parent"
@@ -44,13 +44,6 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:text="Please search for a movie, in order to get results :)"
-        android:textSize="25dp"/>
+        android:textSize="25sp"/>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Button" />
-
-    <!--    android:background="#172196F3"-->
 </LinearLayout>

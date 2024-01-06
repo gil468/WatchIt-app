@@ -14,25 +14,25 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 
-private lateinit var auth: FirebaseAuth
-private lateinit var emailEditText: EditText
-private lateinit var passwordEditText: EditText
-private lateinit var logInButton: Button
-
 class MainActivity : ComponentActivity() {
+    private lateinit var auth: FirebaseAuth
+    private lateinit var emailEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var logInButton: Button
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main);
 
-        val forgotpasswordtextView: TextView = findViewById(R.id.ForgotPassTextView)
-        forgotpasswordtextView.setOnClickListener {
+        val forgotPasswordTextView: TextView = findViewById(R.id.ForgotPassTextView)
+        forgotPasswordTextView.setOnClickListener {
             val intent = Intent(this@MainActivity, ForgotPasswordActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
-        val registertextView: TextView = findViewById(R.id.CreateAccountLinkTextView)
-        registertextView.setOnClickListener {
+        val registerTextView: TextView = findViewById(R.id.CreateAccountLinkTextView)
+        registerTextView.setOnClickListener {
             val intent = Intent(this@MainActivity, RegisterActivity::class.java)
             startActivity(intent)
             finish()
@@ -46,13 +46,14 @@ class MainActivity : ComponentActivity() {
         logInButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
-            val syntaxChecksResult = validateUserRegistration(email, password)
+            val syntaxChecksResult = validateUserCredentials(email, password)
 
             if (syntaxChecksResult) {
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
                     Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
-//                        val intent = Intent(this@MainActivity, ForgotPasswordActivity::class.java)
-//                        startActivity(intent)
+//                    val intent = Intent(this@MainActivity, ForgotPasswordActivity::class.java)
+//                    startActivity(intent)
+//                    finish()
                 }.addOnFailureListener({
                     Toast.makeText(this@MainActivity, "Your Email or Password is incorrect!", Toast.LENGTH_SHORT).show()
                 })
@@ -61,47 +62,7 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            reload(currentUser)
-        }
-    }
-
-    private fun reload(user: FirebaseUser) {
-        user.reload().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                // The user data has been successfully refreshed
-                // You can now access the updated user information
-                val updatedUser = auth.currentUser
-                // Update UI or perform other actions as needed
-//                moveToOtherActivity(updatedUser?.email ?: "")
-            } else {
-                // Failed to reload user data
-                // Handle the error if needed
-                handleError(task.exception)
-            }
-        }
-    }
-
-    private fun moveToOtherActivity(userEmail: String) {
-        // To change: move to other activity when it will created
-//        val intent = Intent(this, OtherActivity::class.java)
-        intent.putExtra("userEmail", userEmail)
-        startActivity(intent)
-        finish() // Optional: Finish the current activity if needed
-    }
-
-    private fun handleError(exception: Exception?) {
-        // Handle the error here, you can log it, show a message, etc.
-        // For simplicity, let's log the error message
-        exception?.message?.let { errorMessage ->
-            println("Error: $errorMessage")
-        }
-    }
-
-    private fun validateUserRegistration(
+    private fun validateUserCredentials(
         email: String,
         password: String
     ): Boolean {

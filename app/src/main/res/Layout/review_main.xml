@@ -17,7 +17,7 @@
         android:text="WatchIt!"
         android:textAlignment="center"
         android:textColor="#FFFF7B00"
-        android:textSize="40dp"
+        android:textSize="40sp"
         />
 
     <Space
@@ -64,7 +64,7 @@
             android:text="Rating:"
             android:textStyle="bold"
             android:textColor="@color/black"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:paddingRight="10dp"/>
 
         <EditText
@@ -97,6 +97,6 @@
         android:background="@drawable/mybutton"
         android:text="Upload"
         android:textColor="#FFFF7B00"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
 </LinearLayout>

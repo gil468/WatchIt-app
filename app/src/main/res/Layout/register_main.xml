@@ -17,7 +17,7 @@
         android:text="WatchIt!"
         android:textAlignment="center"
         android:textColor="#FFFF7B00"
-        android:textSize="40dp"
+        android:textSize="40sp"
         />
 
     <TextView
@@ -34,9 +34,10 @@
 
     <ImageView
         android:id="@+id/profileimageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:src="@drawable/profile_pic_placeholder"/>
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:src="@drawable/profile_pic_placeholder"/>
 
     <Button
         android:id="@+id/btnPickImage"
@@ -55,7 +56,7 @@
         android:ems="10"
         android:inputType="text"
         android:hint="First Name*"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <EditText
         android:id="@+id/editTextLastName"
@@ -64,7 +65,7 @@
         android:ems="10"
         android:inputType="text"
         android:hint="Last Name*"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <EditText
         android:id="@+id/editTextEmailAddress"
@@ -72,7 +73,7 @@
         android:layout_height="wrap_content"
         android:hint="Email Address*"
         android:inputType="textEmailAddress"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textColor="@color/black"/>
 
     <EditText
@@ -81,7 +82,7 @@
         android:layout_height="wrap_content"
         android:hint="Password*"
         android:inputType="textPassword"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <EditText
         android:id="@+id/editTextTextConfirmPassword"
@@ -89,7 +90,7 @@
         android:layout_height="wrap_content"
         android:hint="Confirm Password*"
         android:inputType="textPassword"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <Space
         android:layout_width="match_parent"
@@ -102,7 +103,7 @@
         android:background="@drawable/mybutton"
         android:text="Sign Up"
         android:textColor="#FFFF7B00"
-        android:textSize="20dp"/>
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/LogInTextView"
@@ -113,7 +114,7 @@
         android:textAlignment="center"
         android:text="Already have a account?"
         android:paddingTop="30dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
 </LinearLayout>

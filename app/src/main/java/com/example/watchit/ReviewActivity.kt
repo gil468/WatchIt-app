@@ -21,7 +21,7 @@ class ReviewActivity : ComponentActivity() {
     private lateinit var ratingBar: EditText
     private lateinit var descriptionEditText: EditText
     private lateinit var uploadButton: Button
-    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class ReviewActivity : ComponentActivity() {
 
         btnPickImage = findViewById(R.id.btnPickImage)
         imageView = findViewById(R.id.movieImageView)
-        pickImageResult()
+        defineImageSelectionCallBack()
 
         btnPickImage.setOnClickListener {
             openGallery()
@@ -43,7 +43,7 @@ class ReviewActivity : ComponentActivity() {
             val ratingInput = ratingBar.text.toString().trim()
             val description = descriptionEditText.text.toString().trim()
 
-            val syntaxChecksResult = validateReview(description, ratingInput)
+            val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
 
             if(syntaxChecksResult) {
                 Toast.makeText(this@ReviewActivity, "Review upload Successfully", Toast.LENGTH_SHORT).show()
@@ -53,10 +53,10 @@ class ReviewActivity : ComponentActivity() {
 
     private fun openGallery() {
         val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
-        resultLauncher.launch(intent)
+        imageSelectionCallBack.launch(intent)
     }
-    private fun pickImageResult() {
-        resultLauncher = registerForActivityResult(
+    private fun defineImageSelectionCallBack() {
+        imageSelectionCallBack = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
             { result: ActivityResult ->
                 try {
@@ -73,7 +73,7 @@ class ReviewActivity : ComponentActivity() {
         )
     }
 
-    private fun validateReview(
+    private fun validateReviewSyntax(
         description: String,
         rating: String
     ): Boolean {
