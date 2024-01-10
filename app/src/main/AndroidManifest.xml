@@ -16,6 +16,11 @@
         android:theme="@style/Theme.WatchIt"
         tools:targetApi="31">
         <activity
+            android:name=".MovieActivity"
+            android:exported="false"
+            android:label="@string/title_activity_movie"
+            android:theme="@style/Theme.WatchIt" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.WatchIt">
@@ -50,4 +55,5 @@
             android:theme="@style/Theme.WatchIt">
         </activity>
     </application>
+
 </manifest>

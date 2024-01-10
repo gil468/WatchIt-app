@@ -121,7 +121,8 @@ class SearchActivity : ComponentActivity() {
                 layout.addView(title)
 
                 layout.setOnClickListener {
-                    val intent = Intent(this@SearchActivity, ReviewActivity::class.java)
+                    val intent = Intent(this@SearchActivity, MovieActivity::class.java)
+                    intent.putExtra("movie", movie)
                     startActivity(intent)
                 }
 

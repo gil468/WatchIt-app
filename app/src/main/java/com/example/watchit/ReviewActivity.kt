@@ -41,6 +41,7 @@ class ReviewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.review_main)
+        val movieId = intent.getIntExtra("movieId", 0)
 
         btnPickImage = findViewById(R.id.btnPickImage)
         imageView = findViewById(R.id.movieImageView)
@@ -60,7 +61,7 @@ class ReviewActivity : ComponentActivity() {
 
             val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
 
-            uploadReview(ratingInput, description, 695721)
+            uploadReview(ratingInput, description, movieId)
 
             if (syntaxChecksResult) {
                 Toast.makeText(

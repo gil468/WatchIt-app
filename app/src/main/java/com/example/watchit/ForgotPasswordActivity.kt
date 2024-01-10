@@ -39,14 +39,22 @@ class ForgotPasswordActivity : ComponentActivity() {
                 if(documents.isEmpty) {
                     Toast.makeText(this@ForgotPasswordActivity, "This Email does not exist", Toast.LENGTH_SHORT).show()
                 } else if (syntaxChecksResult) {
-                    auth.sendPasswordResetEmail(email).addOnSuccessListener ({
-                        Toast.makeText(this@ForgotPasswordActivity, "Reset Password link has been sent", Toast.LENGTH_SHORT).show()
+                    auth.sendPasswordResetEmail(email).addOnSuccessListener {
+                        Toast.makeText(
+                            this@ForgotPasswordActivity,
+                            "Reset Password link has been sent",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         val intent = Intent(this@ForgotPasswordActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
-                    }).addOnFailureListener({
-                        Toast.makeText(this@ForgotPasswordActivity, "Error: " + it.message, Toast.LENGTH_SHORT).show()
-                    })
+                    }.addOnFailureListener {
+                        Toast.makeText(
+                            this@ForgotPasswordActivity,
+                            "Error: " + it.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }.addOnFailureListener{ exception ->
                 Log.d("Fail", exception.message.toString())

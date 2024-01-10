@@ -51,9 +51,9 @@ class MainActivity : ComponentActivity() {
             if (syntaxChecksResult) {
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
                     Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
-//                    val intent = Intent(this@MainActivity, ReviewActivity::class.java)
-//                    startActivity(intent)
-//                    finish()
+                    val intent = Intent(this@MainActivity, SearchActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }.addOnFailureListener {
                     Toast.makeText(
                         this@MainActivity,
