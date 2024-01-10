@@ -71,10 +71,10 @@
             android:id="@+id/ratingTextNumber"
             android:layout_width="120dp"
             android:layout_height="50dp"
-            android:maxLength="2"
-            android:inputType="number"
             android:hint="Movie rating"
-            android:textAlignment="center"/>
+            android:inputType="numberDecimal"
+            android:maxLength="3"
+            android:textAlignment="center" />
 
         <ImageView
             android:id="@+id/starImageView"
