@@ -2,12 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="30dp"
     android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:padding="30dp">
+    android:paddingRight="20dp">
 
     <TextView
         android:id="@+id/TitleTextView"
@@ -27,12 +28,12 @@
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="Search..."
-        android:iconifiedByDefault="false"
-        android:inputType="text"
         android:background="@drawable/searchview"
         android:focusable="true"
-        android:focusableInTouchMode="true" />
+        android:focusableInTouchMode="true"
+        android:iconifiedByDefault="false"
+        android:inputType="text"
+        android:queryHint="Search..." />
 
     <Space
         android:layout_width="match_parent"
@@ -42,8 +43,19 @@
         android:id="@+id/SearchTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
         android:text="Please search for a movie, in order to get results :)"
-        android:textSize="25sp"/>
+        android:textAlignment="center"
+        android:textSize="25sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/searchResultsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
 </LinearLayout>

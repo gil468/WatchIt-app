@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WatchIt!</string>
+    <string name="title_activity_movie">MovieActivity</string>
 </resources>
