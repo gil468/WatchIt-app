@@ -26,7 +26,7 @@ class RegisterActivity : ComponentActivity() {
     private lateinit var btnPickImage: Button
     private lateinit var imageView: ImageView
     private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
-
+    private lateinit var selectedImageURI: Uri
     private lateinit var auth: FirebaseAuth
     private lateinit var firstNameEditText: EditText
     private lateinit var lastNameEditText: EditText
@@ -71,25 +71,30 @@ class RegisterActivity : ComponentActivity() {
             val password = passwordEditText.text.toString().trim()
             val confirmPassword = confirmPasswordEditText.text.toString().trim()
 
-            val syntaxChecksResult = validateUserRegistration(firstName, lastName, email, password, confirmPassword)
+            val syntaxChecksResult =
+                validateUserRegistration(firstName, lastName, email, password, confirmPassword)
 
             if (syntaxChecksResult) {
-                auth.createUserWithEmailAndPassword(email,password).addOnCompleteListener({
-//                    val user = auth.currentUser
-//                    val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName("$firstName $lastName").build()
-//                    user?.updateProfile(profileUpdates)?.addOnCompleteListener{
-//                        profileUpdateTask -> if (profileUpdateTask.isSuccessful) {
-//                        Log.d("Succes", "User updated Successfully")
-//                        } else {
-//                            Log.d("Fail", "User updated Failed")
-//                        }
-//                    }
-                    Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT).show()
-//                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
-//                    startActivity(intent)
-                }).addOnFailureListener({
-                    Toast.makeText(this@RegisterActivity, "Register Failed, " + it.message, Toast.LENGTH_SHORT).show()
-                })
+                auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
+                    val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setPhotoUri(selectedImageURI)
+                        .setDisplayName("$firstName $lastName")
+                        .build()
+
+                    it.user?.updateProfile(profileUpdates)
+
+                    Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT)
+                        .show()
+                    val intent = Intent(this@RegisterActivity, SearchActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        this@RegisterActivity,
+                        "Register Failed, " + it.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -161,19 +166,21 @@ class RegisterActivity : ComponentActivity() {
 
     private fun defineImageSelectionCallBack() {
         imageSelectionCallBack = registerForActivityResult(
-            StartActivityForResult(),
-            { result: ActivityResult ->
-                try {
-                    val imageUri: Uri? = result.data?.data
-                    if (imageUri != null) {
-                        imageView.setImageURI(imageUri)
-                    } else {
-                        Toast.makeText(this@RegisterActivity, "No Image Selected", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(this@RegisterActivity, "Error processing result", Toast.LENGTH_SHORT).show()
+            StartActivityForResult()
+        ) { result: ActivityResult ->
+            try {
+                val imageUri: Uri? = result.data?.data
+                if (imageUri != null) {
+                    selectedImageURI = imageUri
+                    imageView.setImageURI(imageUri)
+                } else {
+                    Toast.makeText(this@RegisterActivity, "No Image Selected", Toast.LENGTH_SHORT)
+                        .show()
                 }
+            } catch (e: Exception) {
+                Toast.makeText(this@RegisterActivity, "Error processing result", Toast.LENGTH_SHORT)
+                    .show()
             }
-        )
+        }
     }
 }

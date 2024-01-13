@@ -10,19 +10,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
-    private lateinit var auth: FirebaseAuth
+    private var auth = Firebase.auth
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var logInButton: Button
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main);
+
+        if (auth.currentUser != null) {
+            loggedInHandler()
+        }
+
+        setContentView(R.layout.activity_main)
 
         val forgotPasswordTextView: TextView = findViewById(R.id.ForgotPassTextView)
         forgotPasswordTextView.setOnClickListener {
@@ -38,7 +42,6 @@ class MainActivity : ComponentActivity() {
             finish()
         }
 
-        auth = Firebase.auth
         emailEditText = findViewById(R.id.editTextEmailAddress)
         passwordEditText = findViewById(R.id.editTextPassword)
         logInButton = findViewById(R.id.LogInButton)
@@ -50,10 +53,7 @@ class MainActivity : ComponentActivity() {
 
             if (syntaxChecksResult) {
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-                    Toast.makeText(this@MainActivity, "Login Successful", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@MainActivity, SearchActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    loggedInHandler()
                 }.addOnFailureListener {
                     Toast.makeText(
                         this@MainActivity,
@@ -64,6 +64,13 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    }
+
+    private fun loggedInHandler() {
+        Toast.makeText(this@MainActivity, "Welcome ${auth.currentUser?.displayName}!", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this@MainActivity, SearchActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun validateUserCredentials(

@@ -2,4 +2,11 @@
     <string name="app_name">WatchIt!</string>
     <string name="title_activity_movie">MovieActivity</string>
     <string name="rating">Rating: %.1f</string>
+    <string name="moviePoster">moviePoster</string>
+    <string name="add_review">Add Review</string>
+    <string name="appName">WatchIt!</string>
+    <string name="title_activity_feed">FeedActivity</string>
+    <string name="movie_rating">Movie rating</string>
+    <string name="review_image">review image</string>
+    <string name="pick_review_picture">Pick review picture</string>
 </resources>

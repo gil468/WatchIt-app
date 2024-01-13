@@ -3,7 +3,6 @@ package com.example.watchit
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
@@ -14,7 +13,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import com.example.watchit.model.PublishReviewDTO
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
@@ -79,9 +77,8 @@ class ReviewActivity : ComponentActivity() {
 
         val userId = auth.currentUser!!.uid
 
-        val file = selectedImageURI
         val imageRef = storageRef.child("images/reviews/$reviewId")
-        val uploadTask = imageRef.putFile(file)
+        val uploadTask = imageRef.putFile(selectedImageURI)
 
         uploadTask.addOnFailureListener {
             Toast.makeText(
