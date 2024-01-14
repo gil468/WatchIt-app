@@ -16,10 +16,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import com.example.watchit.model.UserDTO
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 
 class RegisterActivity : ComponentActivity() {
 
@@ -27,13 +29,15 @@ class RegisterActivity : ComponentActivity() {
     private lateinit var imageView: ImageView
     private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
     private lateinit var selectedImageURI: Uri
-    private lateinit var auth: FirebaseAuth
     private lateinit var firstNameEditText: EditText
     private lateinit var lastNameEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var confirmPasswordEditText: EditText
     private lateinit var signUpButton: Button
+    private val db = Firebase.firestore
+    private val storage = Firebase.storage
+    private val auth = Firebase.auth
 
 
     @SuppressLint("MissingInflatedId")
@@ -56,7 +60,6 @@ class RegisterActivity : ComponentActivity() {
             finish()
         }
 
-        auth = Firebase.auth
         firstNameEditText = findViewById(R.id.editTextFirstName)
         lastNameEditText = findViewById(R.id.editTextLastName)
         emailEditText = findViewById(R.id.editTextEmailAddress)
@@ -76,12 +79,36 @@ class RegisterActivity : ComponentActivity() {
 
             if (syntaxChecksResult) {
                 auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
+                    val user = it.user!!
+
                     val profileUpdates = UserProfileChangeRequest.Builder()
-                        .setPhotoUri(selectedImageURI)
                         .setDisplayName("$firstName $lastName")
                         .build()
 
-                    it.user?.updateProfile(profileUpdates)
+                    user.updateProfile(profileUpdates)
+                        .addOnCompleteListener { profileUpdateTask ->
+                            if (profileUpdateTask.isSuccessful) {
+                                Log.d("Success", "User updated Successfully")
+                            } else {
+                                Log.d("Fail", "User updated Failed")
+                            }
+                        }
+
+                    val imageRef =
+                        storage.reference.child("images/users/${user.uid}")
+                    val uploadTask = imageRef.putFile(selectedImageURI)
+
+                    uploadTask.addOnFailureListener {
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            "failed!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }.addOnSuccessListener {
+                        db.collection("users")
+                            .document(user.uid)
+                            .set(UserDTO(firstName, lastName))
+                    }
 
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT)
                         .show()
@@ -138,15 +165,15 @@ class RegisterActivity : ComponentActivity() {
             passwordEditText.error = "Password must be at least 6 characters"
             return false
         }
-        if (!password.any { it.isUpperCase() }) {
-            passwordEditText.error =
-                "Password must contain at least one uppercase letter"
-            return false
-        }
-        if (!password.any { it.isLowerCase() }) {
-            passwordEditText.error = "Password must contain at least one lowercase letter."
-            return false
-        }
+//        if (!password.any { it.isUpperCase() }) {
+//            passwordEditText.error =
+//                "Password must contain at least one uppercase letter"
+//            return false
+//        }
+//        if (!password.any { it.isLowerCase() }) {
+//            passwordEditText.error = "Password must contain at least one lowercase letter."
+//            return false
+//        }
         if (!password.any { it.isDigit() }) {
             passwordEditText.error = "Password must contain at least one digit"
             return false

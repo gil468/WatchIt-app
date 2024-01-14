@@ -9,4 +9,5 @@
     <string name="movie_rating">Movie rating</string>
     <string name="review_image">review image</string>
     <string name="pick_review_picture">Pick review picture</string>
+    <string name="reviews_feed">reviews feed</string>
 </resources>

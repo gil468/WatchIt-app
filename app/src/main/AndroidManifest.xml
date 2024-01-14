@@ -16,6 +16,11 @@
         android:theme="@style/Theme.WatchIt"
         tools:targetApi="31">
         <activity
+            android:name=".FeedActivity"
+            android:exported="false"
+            android:label="@string/title_activity_feed"
+            android:theme="@style/Theme.WatchIt" />
+        <activity
             android:name=".MovieActivity"
             android:exported="false"
             android:label="@string/title_activity_movie"
