@@ -2,7 +2,9 @@ package com.example.watchit
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -16,6 +18,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.RequiresExtension
+import com.example.watchit.model.Movie
+import com.example.watchit.model.User
 import com.example.watchit.model.UserDTO
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -25,49 +30,37 @@ import com.google.firebase.storage.storage
 
 class RegisterActivity : ComponentActivity() {
 
-    private lateinit var btnPickImage: Button
-    private lateinit var imageView: ImageView
     private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
-    private lateinit var selectedImageURI: Uri
+    private var selectedImageURI: Uri? = null
     private lateinit var firstNameEditText: EditText
     private lateinit var lastNameEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var confirmPasswordEditText: EditText
-    private lateinit var signUpButton: Button
     private val db = Firebase.firestore
     private val storage = Firebase.storage
     private val auth = Firebase.auth
 
-
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_main)
 
-        btnPickImage = findViewById(R.id.btnPickImage)
-        imageView = findViewById(R.id.profileimageView)
         defineImageSelectionCallBack()
+        openGallery()
+        toLoginActivity()
+        createNewUser()
+    }
 
-        btnPickImage.setOnClickListener {
-            openGallery()
-        }
-
-        val loginTextView: TextView = findViewById(R.id.LogInTextView)
-        loginTextView.setOnClickListener {
-            val intent = Intent(this@RegisterActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
+    private fun createNewUser() {
         firstNameEditText = findViewById(R.id.editTextFirstName)
         lastNameEditText = findViewById(R.id.editTextLastName)
         emailEditText = findViewById(R.id.editTextEmailAddress)
         passwordEditText = findViewById(R.id.editTextTextPassword)
         confirmPasswordEditText = findViewById(R.id.editTextTextConfirmPassword)
-        signUpButton = findViewById(R.id.SignUpButton)
 
-        signUpButton.setOnClickListener {
+        findViewById<Button>(R.id.SignUpButton).setOnClickListener {
             val firstName = firstNameEditText.text.toString().trim()
             val lastName = lastNameEditText.text.toString().trim()
             val email = emailEditText.text.toString().trim()
@@ -82,23 +75,14 @@ class RegisterActivity : ComponentActivity() {
                     val user = it.user!!
 
                     val profileUpdates = UserProfileChangeRequest.Builder()
+                        .setPhotoUri(selectedImageURI)
                         .setDisplayName("$firstName $lastName")
                         .build()
 
                     user.updateProfile(profileUpdates)
-                        .addOnCompleteListener { profileUpdateTask ->
-                            if (profileUpdateTask.isSuccessful) {
-                                Log.d("Success", "User updated Successfully")
-                            } else {
-                                Log.d("Fail", "User updated Failed")
-                            }
-                        }
 
-                    val imageRef =
-                        storage.reference.child("images/users/${user.uid}")
-                    val uploadTask = imageRef.putFile(selectedImageURI)
-
-                    uploadTask.addOnFailureListener {
+                    val imageRef = storage.reference.child("images/users/${user.uid}")
+                    imageRef.putFile(selectedImageURI!!).addOnFailureListener {
                         Toast.makeText(
                             this@RegisterActivity,
                             "failed!",
@@ -107,7 +91,7 @@ class RegisterActivity : ComponentActivity() {
                     }.addOnSuccessListener {
                         db.collection("users")
                             .document(user.uid)
-                            .set(UserDTO(firstName, lastName))
+                            .set(User(firstName, lastName, email, password))
                     }
 
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT)
@@ -126,6 +110,14 @@ class RegisterActivity : ComponentActivity() {
         }
     }
 
+    private fun toLoginActivity() {
+        findViewById<TextView>(R.id.LogInTextView).setOnClickListener {
+            val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
     private fun validateUserRegistration(
         firstName: String,
         lastName: String,
@@ -138,7 +130,6 @@ class RegisterActivity : ComponentActivity() {
             firstNameEditText.error = "First name cannot be empty"
             return false
         }
-
         if (lastName.isEmpty()) {
             lastNameEditText.error = "Last name cannot be empty"
             return false
@@ -153,6 +144,14 @@ class RegisterActivity : ComponentActivity() {
         }
         if (confirmPassword.isEmpty()) {
             confirmPasswordEditText.error = "Confirm password cannot be empty"
+            return false
+        }
+        if (selectedImageURI == null) {
+            Toast.makeText(
+                this@RegisterActivity,
+                "You must select Profile Image",
+                Toast.LENGTH_SHORT
+            ).show()
             return false
         }
 
@@ -186,9 +185,12 @@ class RegisterActivity : ComponentActivity() {
         return true
     }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
     private fun openGallery() {
-        val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
-        imageSelectionCallBack.launch(intent)
+        findViewById<Button>(R.id.btnPickImage).setOnClickListener {
+            val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
+            imageSelectionCallBack.launch(intent)
+        }
     }
 
     private fun defineImageSelectionCallBack() {
@@ -199,7 +201,7 @@ class RegisterActivity : ComponentActivity() {
                 val imageUri: Uri? = result.data?.data
                 if (imageUri != null) {
                     selectedImageURI = imageUri
-                    imageView.setImageURI(imageUri)
+                    findViewById<ImageView>(R.id.profileImageView).setImageURI(imageUri)
                 } else {
                     Toast.makeText(this@RegisterActivity, "No Image Selected", Toast.LENGTH_SHORT)
                         .show()

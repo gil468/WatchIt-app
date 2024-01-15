@@ -61,10 +61,10 @@ class FeedActivity : ComponentActivity() {
             .await()
             .toObject<UserDTO>()!!
 
-        val reviewText = review.text!!
-        val reviewScore = review.score!!
+        val reviewText = review.description!!
+        val reviewScore = review.rating!!
         //val Movie
-        val date = review.date
+        val date = review.timestamp
         val userFullName = "${user.firstName} ${user.lastName}"
         val userImage = storage.reference.child("images/users/$userId")
             .downloadUrl

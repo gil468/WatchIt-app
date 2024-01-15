@@ -16,37 +16,26 @@ class MainActivity : ComponentActivity() {
     private var auth = Firebase.auth
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
-    private lateinit var logInButton: Button
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
         if (auth.currentUser != null) {
             loggedInHandler()
         }
 
-        setContentView(R.layout.activity_main)
+        toForgotPasswordActivity()
+        toRegisterActivity()
+        logInUser()
+    }
 
-        val forgotPasswordTextView: TextView = findViewById(R.id.ForgotPassTextView)
-        forgotPasswordTextView.setOnClickListener {
-            val intent = Intent(this@MainActivity, ForgotPasswordActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        val registerTextView: TextView = findViewById(R.id.CreateAccountLinkTextView)
-        registerTextView.setOnClickListener {
-            val intent = Intent(this@MainActivity, RegisterActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
+    private fun logInUser() {
         emailEditText = findViewById(R.id.editTextEmailAddress)
         passwordEditText = findViewById(R.id.editTextPassword)
-        logInButton = findViewById(R.id.LogInButton)
 
-        logInButton.setOnClickListener {
+        findViewById<Button>(R.id.LogInButton).setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val syntaxChecksResult = validateUserCredentials(email, password)
@@ -63,12 +52,27 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
 
+    private fun toRegisterActivity() {
+        findViewById<TextView>(R.id.CreateAccountLinkTextView).setOnClickListener {
+            val intent = Intent(this@MainActivity, RegisterActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    private fun toForgotPasswordActivity() {
+        findViewById<TextView>(R.id.ForgotPassTextView).setOnClickListener {
+            val intent = Intent(this@MainActivity, ForgotPasswordActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
     private fun loggedInHandler() {
         Toast.makeText(this@MainActivity, "Welcome ${auth.currentUser?.displayName}!", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this@MainActivity, FeedActivity::class.java)
+        val intent = Intent(this@MainActivity, SearchActivity::class.java)
         startActivity(intent)
         finish()
     }
@@ -92,23 +96,4 @@ class MainActivity : ComponentActivity() {
         }
         return true
     }
-
-    //    private fun checkIfEmailExists(email: String) {
-//        auth.fetchSignInMethodsForEmail(email)
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    val signInMethods = task.result?.signInMethods
-//                    if (signInMethods.isNullOrEmpty()) {
-//                        // Email is not registered
-//                        // You can handle this case accordingly
-//                    } else {
-//                        // Email is registered
-//                        // You can handle this case accordingly
-//                    }
-//                } else {
-//                    // An error occurred while checking the email
-//                    // You can handle this case accordingly
-//                }
-//            }
-//    }
 }

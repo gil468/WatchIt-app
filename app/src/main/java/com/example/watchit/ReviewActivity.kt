@@ -3,6 +3,7 @@ package com.example.watchit
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
@@ -12,7 +13,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.RequiresExtension
 import com.example.watchit.model.PublishReviewDTO
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
@@ -24,49 +26,37 @@ import java.util.UUID
 
 class ReviewActivity : ComponentActivity() {
 
-    private lateinit var btnPickImage: Button
-    private lateinit var imageView: ImageView
-    private lateinit var selectedImageURI: Uri
+    private var selectedImageURI: Uri? = null
     private lateinit var ratingBar: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var uploadButton: Button
     private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
     private val db = Firebase.firestore
     private val storage = Firebase.storage
     private val auth = Firebase.auth
 
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.review_main)
-        val movieId = intent.getIntExtra("movieId", 0)
 
-        btnPickImage = findViewById(R.id.btnPickImage)
-        imageView = findViewById(R.id.movieImageView)
         defineImageSelectionCallBack()
+        openGallery()
+        createReview()
+    }
 
-        btnPickImage.setOnClickListener {
-            openGallery()
-        }
-
-        uploadButton = findViewById(R.id.uploadButton)
+    private fun createReview() {
+        val movieId = intent.getIntExtra("movieId", 0)
         ratingBar = findViewById(R.id.ratingTextNumber)
         descriptionEditText = findViewById(R.id.editTextTextMultiLine)
 
-        uploadButton.setOnClickListener {
-            val ratingInput = ratingBar.text.toString().trim().toDouble()
+        findViewById<Button>(R.id.uploadButton).setOnClickListener {
+            val ratingInput = ratingBar.text.toString().trim()
             val description = descriptionEditText.text.toString().trim()
 
             val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
-
-            uploadReview(ratingInput, description, movieId)
-
             if (syntaxChecksResult) {
-                Toast.makeText(
-                    this@ReviewActivity,
-                    "Review upload Successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
+                uploadReview(ratingInput.toDouble(), description, movieId)
             }
         }
     }
@@ -74,13 +64,10 @@ class ReviewActivity : ComponentActivity() {
     private fun uploadReview(rating: Double, description: String, movieId: Int) {
         val reviewId = UUID.randomUUID().toString()
         val storageRef = storage.reference
-
         val userId = auth.currentUser!!.uid
 
         val imageRef = storageRef.child("images/reviews/$reviewId")
-        val uploadTask = imageRef.putFile(selectedImageURI)
-
-        uploadTask.addOnFailureListener {
+        imageRef.putFile(selectedImageURI!!).addOnFailureListener {
             Toast.makeText(
                 this@ReviewActivity,
                 "failed!",
@@ -98,48 +85,63 @@ class ReviewActivity : ComponentActivity() {
                         movieId
                     )
                 )
+            Toast.makeText(
+                this@ReviewActivity,
+                "Review uploaded Successfully",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
     private fun openGallery() {
-        val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
-        imageSelectionCallBack.launch(intent)
+        findViewById<Button>(R.id.btnPickImage).setOnClickListener {
+            val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
+            imageSelectionCallBack.launch(intent)
+        }
     }
 
     private fun defineImageSelectionCallBack() {
         imageSelectionCallBack = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
+            StartActivityForResult()
         ) { result: ActivityResult ->
             try {
                 val imageUri: Uri? = result.data?.data
                 if (imageUri != null) {
                     selectedImageURI = imageUri
-                    imageView.setImageURI(imageUri)
+                    findViewById<ImageView>(R.id.profileImageView).setImageURI(imageUri)
                 } else {
                     Toast.makeText(this@ReviewActivity, "No Image Selected", Toast.LENGTH_SHORT)
                         .show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(
-                    this@ReviewActivity,
-                    "Error processing result",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@ReviewActivity, "Error processing result", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
 
     private fun validateReviewSyntax(
         description: String,
-        rating: Double
+        rating: String
     ): Boolean {
-        // Basic checks
         if (description.isEmpty()) {
             descriptionEditText.error = "Description cannot be empty"
             return false
         }
-        if (rating < 1 || rating > 10) {
+        if (rating.isEmpty()) {
+            ratingBar.error = "Rating cannot be empty"
+            return false
+        } else if (rating.toDouble() < 1 || rating.toDouble() > 10) {
             ratingBar.error = "Please rate the movie between 1-10"
+            return false
+        }
+        if (selectedImageURI == null) {
+            Toast.makeText(
+                this@ReviewActivity,
+                "You must select Review Picture",
+                Toast.LENGTH_SHORT
+            ).show()
             return false
         }
         return true
