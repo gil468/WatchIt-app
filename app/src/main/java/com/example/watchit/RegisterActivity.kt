@@ -193,6 +193,12 @@ class RegisterActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("Recycle")
+    private fun getImageSize(uri: Uri?): Long {
+        val inputStream = contentResolver.openInputStream(uri!!)
+        return inputStream?.available()?.toLong() ?: 0
+    }
+
     private fun defineImageSelectionCallBack() {
         imageSelectionCallBack = registerForActivityResult(
             StartActivityForResult()
@@ -200,8 +206,18 @@ class RegisterActivity : ComponentActivity() {
             try {
                 val imageUri: Uri? = result.data?.data
                 if (imageUri != null) {
-                    selectedImageURI = imageUri
-                    findViewById<ImageView>(R.id.profileImageView).setImageURI(imageUri)
+                    val imageSize = getImageSize(imageUri)
+                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
+                    if (imageSize > maxCanvasSize) {
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            "Selected image is too large",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        selectedImageURI = imageUri
+                        findViewById<ImageView>(R.id.profileImageView).setImageURI(imageUri)
+                    }
                 } else {
                     Toast.makeText(this@RegisterActivity, "No Image Selected", Toast.LENGTH_SHORT)
                         .show()

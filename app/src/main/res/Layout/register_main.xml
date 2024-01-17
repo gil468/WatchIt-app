@@ -31,7 +31,7 @@
         android:textAppearance="@android:style/TextAppearance.Material.Display1" />
 
     <ImageView
-        android:id="@+id/profileimageView"
+        android:id="@+id/profileImageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center"

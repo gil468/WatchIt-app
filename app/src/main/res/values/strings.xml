@@ -10,4 +10,6 @@
     <string name="review_image">review image</string>
     <string name="pick_review_picture">Pick review picture</string>
     <string name="reviews_feed">reviews feed</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

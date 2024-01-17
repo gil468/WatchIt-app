@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -101,6 +102,12 @@ class ReviewActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("Recycle")
+    private fun getImageSize(uri: Uri?): Long {
+        val inputStream = contentResolver.openInputStream(uri!!)
+        return inputStream?.available()?.toLong() ?: 0
+    }
+
     private fun defineImageSelectionCallBack() {
         imageSelectionCallBack = registerForActivityResult(
             StartActivityForResult()
@@ -108,8 +115,18 @@ class ReviewActivity : ComponentActivity() {
             try {
                 val imageUri: Uri? = result.data?.data
                 if (imageUri != null) {
-                    selectedImageURI = imageUri
-                    findViewById<ImageView>(R.id.profileImageView).setImageURI(imageUri)
+                    val imageSize = getImageSize(imageUri)
+                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
+                    if (imageSize > maxCanvasSize) {
+                        Toast.makeText(
+                            this@ReviewActivity,
+                            "Selected image is too large",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        selectedImageURI = imageUri
+                        findViewById<ImageView>(R.id.movieImageView).setImageURI(imageUri)
+                    }
                 } else {
                     Toast.makeText(this@ReviewActivity, "No Image Selected", Toast.LENGTH_SHORT)
                         .show()
@@ -117,6 +134,7 @@ class ReviewActivity : ComponentActivity() {
             } catch (e: Exception) {
                 Toast.makeText(this@ReviewActivity, "Error processing result", Toast.LENGTH_SHORT)
                     .show()
+                Log.d("Gil", e.message.toString())
             }
         }
     }
