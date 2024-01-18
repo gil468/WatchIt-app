@@ -85,7 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/userprofilebutton"
-        android:text="Foolowing"
+        android:text="Following"
         android:textAlignment="viewStart"
         android:textColor="#000000"
         android:textSize="20sp"

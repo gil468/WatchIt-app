@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
@@ -25,7 +26,7 @@
     <ImageView
         android:id="@+id/movieImageView"
         android:layout_width="300dp"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:src="@drawable/add_image"
         android:contentDescription="@string/review_image" />
@@ -43,7 +44,7 @@
     <EditText
         android:id="@+id/editTextTextMultiLine"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:inputType="textMultiLine"
         android:hint="Please fill your review here"/>
 
@@ -84,7 +85,6 @@
 
 </LinearLayout>
 
-
     <Space
         android:layout_width="match_parent"
         android:layout_height="20dp"/>
@@ -97,5 +97,11 @@
         android:text="Upload"
         android:textColor="#FFFF7B00"
         android:textSize="20sp"/>
+
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/BottomNav"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:menu="@menu/bottom_nav_menu"/>-->
 
 </LinearLayout>

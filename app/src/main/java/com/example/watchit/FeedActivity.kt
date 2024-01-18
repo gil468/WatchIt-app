@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams.MATCH_PARENT
@@ -38,7 +39,7 @@ class FeedActivity : ComponentActivity() {
     private fun fetchReviews() {
         Firebase.firestore
             .collection("reviews")
-            .orderBy("date", Query.Direction.DESCENDING)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { reviewsDocuments ->
                 reviewsDocuments.forEach { reviewDocument ->
@@ -61,8 +62,8 @@ class FeedActivity : ComponentActivity() {
             .await()
             .toObject<UserDTO>()!!
 
-        val reviewText = review.description!!
-        val reviewScore = review.rating!!
+        val reviewDescription = review.description!!
+        val reviewRating = review.rating!!
         //val Movie
         val date = review.timestamp
         val userFullName = "${user.firstName} ${user.lastName}"
@@ -73,14 +74,14 @@ class FeedActivity : ComponentActivity() {
             .downloadUrl
             .await()
 
-        addReviewToLayout(userFullName, userImage, reviewText, reviewScore, reviewImage)
+        addReviewToLayout(userFullName, userImage, reviewDescription, reviewRating, reviewImage)
     }
 
     private fun addReviewToLayout(
         userFullName: String,
         userImage: Uri,
-        reviewText: String,
-        reviewScore: Double,
+        reviewDescription: String,
+        reviewRating: Double,
         reviewImage: Uri
     ) {
         val reviewLayout = LinearLayout(this).apply {
@@ -95,21 +96,25 @@ class FeedActivity : ComponentActivity() {
         val userLayout = LinearLayout(this)
 
         val userImageView = ImageView(this)
-            .apply { layoutParams = LinearLayout.LayoutParams(200, 200) }
+            .apply { layoutParams = LinearLayout.LayoutParams(150, 150) }
 
         Picasso.get().load(userImage).into(userImageView)
 
         val userNameView = TextView(this).apply {
             text = userFullName
             textSize = 16f
+            setTextColor(Color.parseColor("#000000"))
+            typeface = Typeface.DEFAULT_BOLD
         }
-        userNameView.layoutParams = LinearLayout.LayoutParams(
+        val userNameLayoutParams = LinearLayout.LayoutParams(
             WRAP_CONTENT,
             WRAP_CONTENT
         ).apply {
             weight = 1.0f
             gravity = Gravity.CENTER
         }
+        userNameLayoutParams.setMargins(20, 0, 0, 0)
+        userNameView.layoutParams = userNameLayoutParams
 
         userLayout.addView(userImageView)
         userLayout.addView(userNameView)
@@ -127,7 +132,7 @@ class FeedActivity : ComponentActivity() {
         reviewLayout.addView(reviewImageView)
 
         val reviewTextView = TextView(this).apply {
-            text = reviewText
+            text = reviewDescription
             textSize = 18f
             setTextColor(Color.parseColor("#000000"))
             layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
@@ -138,7 +143,7 @@ class FeedActivity : ComponentActivity() {
         reviewLayout.addView(reviewTextView)
 
         val reviewRatingView = TextView(this).apply {
-            text = "Score: $reviewScore ★"
+            text = "Rating: $reviewRating ★"
             textSize = 20f
             gravity = Gravity.CENTER
             typeface = Typeface.DEFAULT_BOLD
@@ -149,6 +154,43 @@ class FeedActivity : ComponentActivity() {
         }
 
         reviewLayout.addView(reviewRatingView)
+
+        //Add Follow, Like, Comment and Add to watchlist Buttons
+
+        val reviewLikeButton = Button(this).apply {
+            text = "Like"
+            textSize = 20f
+            gravity = Gravity.START
+            setTextColor(Color.parseColor("#FFFF7B00"))
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
+                LinearLayout.HORIZONTAL
+            }
+            setBackgroundResource(R.drawable.mybutton)
+        }
+
+        reviewLayout.addView(reviewLikeButton)
+
+        val reviewCommentButton = Button(this).apply {
+            text = "Comment"
+            textSize = 20f
+            gravity = Gravity.START
+            setTextColor(Color.parseColor("#FFFF7B00"))
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            setBackgroundResource(R.drawable.mybutton)
+        }
+
+        reviewLayout.addView(reviewCommentButton)
+
+        val reviewAddToWatchlistButton = Button(this).apply {
+            text = "Add to watchlist"
+            textSize = 20f
+            gravity = Gravity.START
+            setTextColor(Color.parseColor("#FFFF7B00"))
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            setBackgroundResource(R.drawable.mybutton)
+        }
+
+        reviewLayout.addView(reviewAddToWatchlistButton)
 
         reviewsLayout.addView(reviewLayout)
     }

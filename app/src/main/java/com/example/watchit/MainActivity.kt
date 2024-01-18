@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
 
     private fun loggedInHandler() {
         Toast.makeText(this@MainActivity, "Welcome ${auth.currentUser?.displayName}!", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this@MainActivity, SearchActivity::class.java)
+        val intent = Intent(this@MainActivity, FeedActivity::class.java)
         startActivity(intent)
         finish()
     }
