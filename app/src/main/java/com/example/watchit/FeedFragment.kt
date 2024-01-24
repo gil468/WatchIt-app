@@ -24,12 +24,11 @@ import com.squareup.picasso.Picasso
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
-class MyReviews : Fragment() {
-    private lateinit var root: View
+class FeedFragment : Fragment() {
     private lateinit var reviewsLayout: LinearLayout
+    private lateinit var root: View
     private val db = Firebase.firestore
     private val storage = Firebase.storage
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -38,10 +37,9 @@ class MyReviews : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        root = inflater.inflate(R.layout.fragment_my_reviews, container, false)
+        root = inflater.inflate(R.layout.fragment_feed, container, false)
 
-        reviewsLayout = root.findViewById(R.id.myReviewsFeed)
+        reviewsLayout = root.findViewById(R.id.reviewsFeed)
         fetchReviews(root)
 
         return root
@@ -129,8 +127,17 @@ class MyReviews : Fragment() {
         userNameLayoutParams.setMargins(20, 0, 0, 0)
         userNameView.layoutParams = userNameLayoutParams
 
+        val reviewFollowButton = Button(root.context).apply {
+            text = "Follow"
+            textSize = 20f
+            setTextColor(Color.parseColor("#FFFF7B00"))
+            layoutParams = LinearLayout.LayoutParams(420, LinearLayout.LayoutParams.WRAP_CONTENT).apply { setMargins(0, 20, 20, 0) }
+            setBackgroundResource(R.drawable.mybutton)
+        }
+
         userLayout.addView(userImageView)
         userLayout.addView(userNameView)
+        userLayout.addView(reviewFollowButton)
 
         reviewLayout.addView(userLayout)
 
@@ -176,11 +183,10 @@ class MyReviews : Fragment() {
 
         val buttonsLayout = LinearLayout(root.context).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
         }
 
-        val reviewEditButton = Button(root.context).apply {
-            text = "Edit"
+        val reviewLikeButton = Button(root.context).apply {
+            text = "Like"
             textSize = 20f
             setTextColor(Color.parseColor("#FFFF7B00"))
             layoutParams = LinearLayout.LayoutParams(
@@ -190,10 +196,10 @@ class MyReviews : Fragment() {
             setBackgroundResource(R.drawable.mybutton)
         }
 
-        buttonsLayout.addView(reviewEditButton)
+        buttonsLayout.addView(reviewLikeButton)
 
-        val reviewDeleteButton = Button(root.context).apply {
-            text = "Delete"
+        val reviewCommentButton = Button(root.context).apply {
+            text = "Comment"
             textSize = 20f
             setTextColor(Color.parseColor("#FFFF7B00"))
             layoutParams = LinearLayout.LayoutParams(
@@ -203,7 +209,20 @@ class MyReviews : Fragment() {
             setBackgroundResource(R.drawable.mybutton)
         }
 
-        buttonsLayout.addView(reviewDeleteButton)
+        buttonsLayout.addView(reviewCommentButton)
+
+        val reviewAddToWatchlistButton = Button(root.context).apply {
+            text = "Add to list"
+            textSize = 20f
+            setTextColor(Color.parseColor("#FFFF7B00"))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, 20, 20, 0) }
+            setBackgroundResource(R.drawable.mybutton)
+        }
+
+        buttonsLayout.addView(reviewAddToWatchlistButton)
 
         reviewLayout.addView(buttonsLayout)
 

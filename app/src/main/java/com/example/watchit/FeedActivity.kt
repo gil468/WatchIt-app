@@ -13,7 +13,7 @@ import android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import com.example.watchit.model.PublishReviewDTO
-import com.example.watchit.model.UserDTO
+import com.example.watchit.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
@@ -60,7 +60,7 @@ class FeedActivity : ComponentActivity() {
             .document(userId)
             .get()
             .await()
-            .toObject<UserDTO>()!!
+            .toObject<User>()!!
 
         val reviewDescription = review.description!!
         val reviewRating = review.rating!!
@@ -116,8 +116,17 @@ class FeedActivity : ComponentActivity() {
         userNameLayoutParams.setMargins(20, 0, 0, 0)
         userNameView.layoutParams = userNameLayoutParams
 
+        val reviewFollowButton = Button(this).apply {
+            text = "Follow"
+            textSize = 20f
+            setTextColor(Color.parseColor("#FFFF7B00"))
+            layoutParams = LinearLayout.LayoutParams(420, WRAP_CONTENT).apply { setMargins(0, 20, 20, 0) }
+            setBackgroundResource(R.drawable.mybutton)
+        }
+
         userLayout.addView(userImageView)
         userLayout.addView(userNameView)
+        userLayout.addView(reviewFollowButton)
 
         reviewLayout.addView(userLayout)
 
@@ -157,40 +166,42 @@ class FeedActivity : ComponentActivity() {
 
         //Add Follow, Like, Comment and Add to watchlist Buttons
 
+        val buttonsLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+
         val reviewLikeButton = Button(this).apply {
             text = "Like"
             textSize = 20f
-            gravity = Gravity.START
             setTextColor(Color.parseColor("#FFFF7B00"))
-            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply {
-                LinearLayout.HORIZONTAL
-            }
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply { setMargins(20, 20, 20, 0) }
             setBackgroundResource(R.drawable.mybutton)
         }
 
-        reviewLayout.addView(reviewLikeButton)
+        buttonsLayout.addView(reviewLikeButton)
 
         val reviewCommentButton = Button(this).apply {
             text = "Comment"
             textSize = 20f
-            gravity = Gravity.START
             setTextColor(Color.parseColor("#FFFF7B00"))
-            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply { setMargins(0, 20, 20, 0) }
             setBackgroundResource(R.drawable.mybutton)
         }
 
-        reviewLayout.addView(reviewCommentButton)
+        buttonsLayout.addView(reviewCommentButton)
 
         val reviewAddToWatchlistButton = Button(this).apply {
-            text = "Add to watchlist"
+            text = "Add to list"
             textSize = 20f
-            gravity = Gravity.START
             setTextColor(Color.parseColor("#FFFF7B00"))
-            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply { setMargins(0, 20, 20, 0) }
             setBackgroundResource(R.drawable.mybutton)
         }
 
-        reviewLayout.addView(reviewAddToWatchlistButton)
+        buttonsLayout.addView(reviewAddToWatchlistButton)
+
+        reviewLayout.addView(buttonsLayout)
+
 
         reviewsLayout.addView(reviewLayout)
     }

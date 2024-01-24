@@ -2,12 +2,10 @@ package com.example.watchit
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
@@ -19,9 +17,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresExtension
-import com.example.watchit.model.Movie
 import com.example.watchit.model.User
-import com.example.watchit.model.UserDTO
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth

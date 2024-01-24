@@ -2,10 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:padding="30dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/TitleTextView"
@@ -15,86 +13,21 @@
         android:text="WatchIt!"
         android:textAlignment="center"
         android:textColor="#FFFF7B00"
-        android:textSize="40sp"
-        />
-
-    <TextView
-        android:id="@+id/WelcomeTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingBottom="15dp"
-        android:text="Welcome Back!"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:textAppearance="@android:style/TextAppearance.Material.Display1" />
-
-    <TextView
-        android:id="@+id/EmailTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email:"
-        android:textSize="20sp"
-        android:textColor="@color/black"/>
-
-    <EditText
-        android:id="@+id/editTextEmailAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter your email address"
-        android:inputType="textEmailAddress"
-        android:textSize="20sp"/>
-
-    <TextView
-        android:id="@+id/PasswordTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Password:"
-        android:paddingTop="40dp"
-        android:textSize="20sp"
-        android:textColor="@color/black"/>
-
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter your password"
-        android:inputType="textPassword"
-        android:textSize="20sp"/>
+        android:textSize="40sp" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="20dp"/>
+        android:layout_height="10dp"/>
 
-    <Button
-        android:id="@+id/LogInButton"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/mybutton"
-        android:text="Log In"
-        android:textColor="#FFFF7B00"
-        android:textSize="20sp"/>
+        android:layout_height="match_parent"
+        android:id="@+id/FragmentLayout"/>
 
-    <TextView
-        android:id="@+id/ForgotPassTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textAlignment="center"
-        android:text="Forgot your password?"
-        android:paddingTop="40dp"
-        android:textSize="20sp"/>
-
-    <TextView
-        android:id="@+id/CreateAccountLinkTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="30dp"
-        android:text="Don't have an account yet?"
-        android:textAlignment="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:textColor="#FFFF7B00"
-        android:textStyle="bold" />
+<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--        android:id="@+id/BottomNav"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:menu="@menu/bottom_nav_menu"/>-->
 
 </LinearLayout>

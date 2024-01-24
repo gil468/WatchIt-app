@@ -8,4 +8,6 @@ data class User(
     var lastName: String,
     var email: String,
     var password: String
-) : Serializable
+) : Serializable {
+    constructor() : this("", "", "", "")
+}

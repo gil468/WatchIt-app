@@ -6,19 +6,7 @@
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:padding="30dp"
     tools:context=".EditMyProfile">
-
-    <TextView
-        android:id="@+id/TitleTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:text="WatchIt!"
-        android:textAlignment="center"
-        android:textColor="#FFFF7B00"
-        android:textSize="40sp"
-        />
 
     <TextView
         android:id="@+id/WelcomeTextView"
@@ -33,9 +21,9 @@
         android:textAppearance="@android:style/TextAppearance.Material.Display1" />
 
     <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:id="@+id/ProfileImageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:src="@drawable/profile_pic_placeholder"/>
 
@@ -97,7 +85,7 @@
         android:layout_height="20dp"/>
 
     <Button
-        android:id="@+id/SignUpButton"
+        android:id="@+id/UpdateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/mybutton"

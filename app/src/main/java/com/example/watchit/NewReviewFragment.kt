@@ -7,21 +7,18 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import com.example.watchit.model.PublishReviewDTO
-import com.google.android.gms.dynamic.SupportFragmentWrapper
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
@@ -30,33 +27,66 @@ import com.google.firebase.storage.storage
 import java.util.Date
 import java.util.UUID
 
-class ReviewActivity : AppCompatActivity() {
-
+class NewReviewFragment : Fragment() {
     private var selectedImageURI: Uri? = null
+    private lateinit var root: View
+
     private lateinit var ratingBar: EditText
     private lateinit var descriptionEditText: EditText
-    private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
     private val db = Firebase.firestore
     private val storage = Firebase.storage
     private val auth = Firebase.auth
 
-    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
-    @SuppressLint("MissingInflatedId")
+    private val imageSelectionLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            try {
+                val imageUri: Uri? = result.data?.data
+                if (imageUri != null) {
+                    val imageSize = getImageSize(imageUri)
+                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
+                    if (imageSize > maxCanvasSize) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Selected image is too large",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        selectedImageURI = imageUri
+                        root.findViewById<ImageView>(R.id.movieImageView).setImageURI(imageUri)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("Gil", "Error: ${e.message}")
+                Toast.makeText(requireContext(), "Error processing result", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.review_main)
-
-        defineImageSelectionCallBack()
-        openGallery()
-        createReview()
     }
 
-    private fun createReview() {
-        val movieId = intent.getIntExtra("movieId", 0)
-        ratingBar = findViewById(R.id.ratingTextNumber)
-        descriptionEditText = findViewById(R.id.editTextTextMultiLine)
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        root = inflater.inflate(R.layout.fragment_new_review, container, false)
 
-        findViewById<Button>(R.id.uploadButton).setOnClickListener {
+        defineImageSelectionCallBack(root)
+        createReview(root)
+
+        return root
+    }
+
+    private fun createReview(root: View) {
+        var movieId = 0
+        arguments?.let {
+            movieId = it.getInt("movieId", 0)
+        }
+        ratingBar = root.findViewById(R.id.ratingTextNumber)
+        descriptionEditText = root.findViewById(R.id.editTextTextMultiLine)
+
+        root.findViewById<Button>(R.id.uploadButton).setOnClickListener {
             val ratingInput = ratingBar.text.toString().trim()
             val description = descriptionEditText.text.toString().trim()
 
@@ -75,7 +105,7 @@ class ReviewActivity : AppCompatActivity() {
         val imageRef = storageRef.child("images/reviews/$reviewId")
         imageRef.putFile(selectedImageURI!!).addOnFailureListener {
             Toast.makeText(
-                this@ReviewActivity,
+                requireContext(),
                 "failed!",
                 Toast.LENGTH_SHORT
             ).show()
@@ -92,54 +122,16 @@ class ReviewActivity : AppCompatActivity() {
                     )
                 )
             Toast.makeText(
-                this@ReviewActivity,
+                requireContext(),
                 "Review uploaded Successfully",
                 Toast.LENGTH_SHORT
             ).show()
-        }
-    }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
-    private fun openGallery() {
-        findViewById<Button>(R.id.btnPickImage).setOnClickListener {
-            val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
-            imageSelectionCallBack.launch(intent)
-        }
-    }
-
-    @SuppressLint("Recycle")
-    private fun getImageSize(uri: Uri?): Long {
-        val inputStream = contentResolver.openInputStream(uri!!)
-        return inputStream?.available()?.toLong() ?: 0
-    }
-
-    private fun defineImageSelectionCallBack() {
-        imageSelectionCallBack = registerForActivityResult(
-            StartActivityForResult()
-        ) { result: ActivityResult ->
-            try {
-                val imageUri: Uri? = result.data?.data
-                if (imageUri != null) {
-                    val imageSize = getImageSize(imageUri)
-                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
-                    if (imageSize > maxCanvasSize) {
-                        Toast.makeText(
-                            this@ReviewActivity,
-                            "Selected image is too large",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        selectedImageURI = imageUri
-                        findViewById<ImageView>(R.id.movieImageView).setImageURI(imageUri)
-                    }
-                } else {
-                    Toast.makeText(this@ReviewActivity, "No Image Selected", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@ReviewActivity, "Error processing result", Toast.LENGTH_SHORT)
-                    .show()
-                Log.d("Gil", e.message.toString())
+            val fragment = FeedFragment()
+            activity?.supportFragmentManager?.beginTransaction()?.apply {
+                replace(R.id.FragmentLayout, fragment)
+//                addToBackStack(null)
+                commit()
             }
         }
     }
@@ -161,12 +153,26 @@ class ReviewActivity : AppCompatActivity() {
         }
         if (selectedImageURI == null) {
             Toast.makeText(
-                this@ReviewActivity,
+                requireContext(),
                 "You must select Review Picture",
                 Toast.LENGTH_SHORT
             ).show()
             return false
         }
         return true
+    }
+
+    @SuppressLint("Recycle")
+    private fun getImageSize(uri: Uri?): Long {
+        val inputStream = requireContext().contentResolver.openInputStream(uri!!)
+        return inputStream?.available()?.toLong() ?: 0
+    }
+
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
+    private fun defineImageSelectionCallBack(root: View) {
+        root.findViewById<Button>(R.id.btnPickImage).setOnClickListener {
+            val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
+            imageSelectionLauncher.launch(intent)
+        }
     }
 }
