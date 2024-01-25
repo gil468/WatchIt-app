@@ -6,18 +6,7 @@
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:padding="30dp"
     tools:context=".UserFollowing">
-
-    <TextView
-        android:id="@+id/TitleTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:text="WatchIt!"
-        android:textAlignment="center"
-        android:textColor="#FFFF7B00"
-        android:textSize="40sp" />
 
     <TextView
         android:id="@+id/WelcomeTextView"
