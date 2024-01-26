@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    tools:context=".UserProfile">
+    tools:context=".Profile">
 
     <ImageView
         android:id="@+id/ProfileImageView"
