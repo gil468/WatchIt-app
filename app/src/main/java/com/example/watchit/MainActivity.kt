@@ -1,18 +1,10 @@
 package com.example.watchit
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,8 +16,28 @@ class MainActivity : AppCompatActivity() {
         val transaction = fragmentManager.beginTransaction()
 //        transaction.replace(R.id.FragmentLayout, FeedFragment())
 //        transaction.replace(R.id.FragmentLayout, SearchFragment())
-        transaction.replace(R.id.FragmentLayout, UserProfile())
+        transaction.replace(R.id.FragmentLayout, Profile())
         transaction.addToBackStack(null)
         transaction.commit()
+
+        bottomMenu()
+    }
+
+    private fun bottomMenu() {
+        BottomNavigationView.OnNavigationItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.Home -> {
+                    // Respond to navigation item 1 click
+                    Toast.makeText(this@MainActivity, "Home selected!", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.Upload -> {
+                    // Respond to navigation item 2 click
+                    Toast.makeText(this@MainActivity, "Upload selected!", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 }

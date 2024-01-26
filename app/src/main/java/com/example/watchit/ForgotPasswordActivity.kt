@@ -6,10 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -23,7 +24,7 @@ class ForgotPasswordActivity : ComponentActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.forgot_password_main)
+        setContentView(R.layout.activity_forgot_password)
 
         sendResetPasswordLink()
         toRegisterActivity()
@@ -40,7 +41,7 @@ class ForgotPasswordActivity : ComponentActivity() {
     private fun sendResetPasswordLink() {
         auth = Firebase.auth
         findViewById<Button>(R.id.ResetPasswordButton).setOnClickListener {
-            val email = findViewById<EditText>(R.id.editTextEmailAddress).text.toString().trim()
+            val email = findViewById<TextInputEditText>(R.id.editTextEmailAddress).text.toString().trim()
             val syntaxChecksResult = validateUserEmail(email)
             if (syntaxChecksResult) {
                 db.collection("users").whereEqualTo("email", email).get()
@@ -80,13 +81,15 @@ class ForgotPasswordActivity : ComponentActivity() {
     private fun validateUserEmail(
         email: String
     ): Boolean {
+        val lastNameInputLayout = findViewById<TextInputLayout>(R.id.layoutEmailAddress)
         if (email.isEmpty()) {
-            findViewById<EditText>(R.id.editTextEmailAddress).error = "Email cannot be empty"
+            lastNameInputLayout.error = "Email cannot be empty"
             return false
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            findViewById<EditText>(R.id.editTextEmailAddress).error = "Invalid email format"
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            lastNameInputLayout.error = "Invalid email format"
             return false
+        } else {
+            lastNameInputLayout.error = null
         }
         return true
     }

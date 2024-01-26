@@ -1,9 +1,7 @@
 package com.example.watchit
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,11 +14,10 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 import com.squareup.picasso.Picasso
 
-class UserProfile : Fragment() {
+class Profile : Fragment() {
 
     private var auth = Firebase.auth
     private val storage = Firebase.storage
@@ -33,7 +30,7 @@ class UserProfile : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_user_profile, container, false)
+        val root = inflater.inflate(R.layout.fragment_profile, container, false)
 
         setUserNameTextView(root)
         setProfileImage(root)

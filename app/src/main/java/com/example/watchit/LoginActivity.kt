@@ -8,14 +8,18 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
 class LoginActivity : AppCompatActivity() {
 
     private var auth = Firebase.auth
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
+    private lateinit var emailAddressInputLayout: TextInputLayout
+    private lateinit var emailAddressEditText: TextInputEditText
+    private lateinit var passwordInputLayout: TextInputLayout
+    private lateinit var passwordEditText: TextInputEditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -30,11 +34,13 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun logInUser() {
-        emailEditText = findViewById(R.id.editTextEmailAddress)
+        emailAddressInputLayout = findViewById(R.id.layoutEmailAddress)
+        emailAddressEditText = findViewById(R.id.editTextEmailAddress)
+        passwordInputLayout = findViewById(R.id.layoutPassword)
         passwordEditText = findViewById(R.id.editTextPassword)
 
         findViewById<Button>(R.id.LogInButton).setOnClickListener {
-            val email = emailEditText.text.toString().trim()
+            val email = emailAddressEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val syntaxChecksResult = validateUserCredentials(email, password)
 
@@ -81,16 +87,19 @@ class LoginActivity : AppCompatActivity() {
     ): Boolean {
         // Basic checks
         if (email.isEmpty()) {
-            emailEditText.error = "Email cannot be empty"
+            emailAddressInputLayout.error = "Email cannot be empty"
             return false
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEditText.error = "Invalid email format"
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailAddressInputLayout.error = "Invalid email format"
             return false
+        } else {
+            emailAddressInputLayout.error = null
         }
         if (password.isEmpty()) {
-            passwordEditText.error = "Password cannot be empty"
+            passwordInputLayout.error = "Password cannot be empty"
             return false
+        } else {
+            passwordInputLayout.error = null
         }
         return true
     }

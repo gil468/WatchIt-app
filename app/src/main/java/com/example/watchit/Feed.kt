@@ -24,7 +24,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
-class FeedFragment : Fragment() {
+class Feed : Fragment() {
     private lateinit var reviewsLayout: LinearLayout
     private lateinit var root: View
     private val db = Firebase.firestore

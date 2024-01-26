@@ -18,6 +18,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresExtension
 import com.example.watchit.model.User
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
@@ -28,11 +30,16 @@ class RegisterActivity : ComponentActivity() {
 
     private lateinit var imageSelectionCallBack: ActivityResultLauncher<Intent>
     private var selectedImageURI: Uri? = null
-    private lateinit var firstNameEditText: EditText
-    private lateinit var lastNameEditText: EditText
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
-    private lateinit var confirmPasswordEditText: EditText
+    private lateinit var firstNameInputLayout: TextInputLayout
+    private lateinit var firstNameEditText: TextInputEditText
+    private lateinit var lastNameInputLayout: TextInputLayout
+    private lateinit var lastNameEditText: TextInputEditText
+    private lateinit var emailAddressInputLayout: TextInputLayout
+    private lateinit var emailAddressEditText: TextInputEditText
+    private lateinit var passwordInputLayout: TextInputLayout
+    private lateinit var passwordEditText: TextInputEditText
+    private lateinit var confirmPasswordInputLayout: TextInputLayout
+    private lateinit var confirmPasswordEditText: TextInputEditText
     private val db = Firebase.firestore
     private val storage = Firebase.storage
     private val auth = Firebase.auth
@@ -41,7 +48,7 @@ class RegisterActivity : ComponentActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.register_main)
+        setContentView(R.layout.activity_register)
 
         defineImageSelectionCallBack()
         openGallery()
@@ -50,16 +57,21 @@ class RegisterActivity : ComponentActivity() {
     }
 
     private fun createNewUser() {
+        firstNameInputLayout = findViewById(R.id.layoutFirstName)
         firstNameEditText = findViewById(R.id.editTextFirstName)
+        lastNameInputLayout = findViewById(R.id.layoutLastName)
         lastNameEditText = findViewById(R.id.editTextLastName)
-        emailEditText = findViewById(R.id.editTextEmailAddress)
-        passwordEditText = findViewById(R.id.editTextTextPassword)
-        confirmPasswordEditText = findViewById(R.id.editTextTextConfirmPassword)
+        emailAddressInputLayout = findViewById(R.id.layoutEmailAddress)
+        emailAddressEditText = findViewById(R.id.editTextEmailAddress)
+        passwordInputLayout = findViewById(R.id.layoutPassword)
+        passwordEditText = findViewById(R.id.editTextPassword)
+        confirmPasswordInputLayout = findViewById(R.id.layoutConfirmPassword)
+        confirmPasswordEditText = findViewById(R.id.editTextConfirmPassword)
 
         findViewById<Button>(R.id.SignUpButton).setOnClickListener {
             val firstName = firstNameEditText.text.toString().trim()
             val lastName = lastNameEditText.text.toString().trim()
-            val email = emailEditText.text.toString().trim()
+            val email = emailAddressEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
             val confirmPassword = confirmPasswordEditText.text.toString().trim()
 
@@ -92,7 +104,7 @@ class RegisterActivity : ComponentActivity() {
 
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT)
                         .show()
-                    val intent = Intent(this@RegisterActivity, SearchActivity::class.java)
+                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 }.addOnFailureListener {
@@ -108,7 +120,7 @@ class RegisterActivity : ComponentActivity() {
 
     private fun toLoginActivity() {
         findViewById<TextView>(R.id.LogInTextView).setOnClickListener {
-            val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -121,26 +133,47 @@ class RegisterActivity : ComponentActivity() {
         password: String,
         confirmPassword: String
     ): Boolean {
-        // Basic checks
         if (firstName.isEmpty()) {
-            firstNameEditText.error = "First name cannot be empty"
+            firstNameInputLayout.error = "First name cannot be empty"
             return false
+        } else {
+            firstNameInputLayout.error = null
         }
         if (lastName.isEmpty()) {
-            lastNameEditText.error = "Last name cannot be empty"
+            lastNameInputLayout.error = "Last name cannot be empty"
             return false
+        } else {
+            lastNameInputLayout.error = null
         }
         if (email.isEmpty()) {
-            emailEditText.error = "Email cannot be empty"
+            emailAddressInputLayout.error = "Email cannot be empty"
             return false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailAddressInputLayout.error = "Invalid email format"
+            return false
+        } else {
+            emailAddressInputLayout.error = null
         }
         if (password.isEmpty()) {
-            passwordEditText.error = "Password cannot be empty"
+            passwordInputLayout.error = "Password cannot be empty"
             return false
+        } else if (password.length < 6) {
+            passwordInputLayout.error = "Password must be at least 6 characters"
+            return false
+        } else if (!password.any { it.isDigit() }) {
+            passwordInputLayout.error = "Password must contain at least one digit"
+            return false
+        } else {
+            passwordInputLayout.error = null
         }
         if (confirmPassword.isEmpty()) {
-            confirmPasswordEditText.error = "Confirm password cannot be empty"
+            confirmPasswordInputLayout.error = "Confirm password cannot be empty"
             return false
+        } else if (password != confirmPassword) {
+            confirmPasswordInputLayout.error = "Passwords do not match."
+            return false
+        } else {
+            confirmPasswordInputLayout.error = null
         }
         if (selectedImageURI == null) {
             Toast.makeText(
@@ -150,34 +183,6 @@ class RegisterActivity : ComponentActivity() {
             ).show()
             return false
         }
-
-        // Advanced checks
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEditText.error = "Invalid email format"
-            return false
-        }
-        if (password.length < 6) {
-            passwordEditText.error = "Password must be at least 6 characters"
-            return false
-        }
-//        if (!password.any { it.isUpperCase() }) {
-//            passwordEditText.error =
-//                "Password must contain at least one uppercase letter"
-//            return false
-//        }
-//        if (!password.any { it.isLowerCase() }) {
-//            passwordEditText.error = "Password must contain at least one lowercase letter."
-//            return false
-//        }
-        if (!password.any { it.isDigit() }) {
-            passwordEditText.error = "Password must contain at least one digit"
-            return false
-        }
-        if (password != confirmPassword) {
-            confirmPasswordEditText.error = "Passwords do not match."
-            return false
-        }
-        // All checks passed
         return true
     }
 

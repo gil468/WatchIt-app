@@ -1,14 +1,15 @@
 package com.example.watchit
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.core.view.isNotEmpty
 import com.example.watchit.model.MovieApiResponse
 import com.squareup.picasso.Picasso
@@ -23,9 +24,8 @@ import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.runBlocking
 import java.net.URLEncoder
 
-
-class SearchActivity : ComponentActivity() {
-
+class Search : Fragment() {
+    private lateinit var root: View
     private lateinit var searchView: SearchView
     private lateinit var mainLayout: LinearLayout
     private lateinit var pleaseSearchView: TextView
@@ -33,14 +33,20 @@ class SearchActivity : ComponentActivity() {
     private lateinit var httpClient: HttpClient
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        root = inflater.inflate(R.layout.fragment_search, container, false)
 
         initHttpClient()
-        setContentView(R.layout.search_main)
 
-        mainLayout = findViewById(R.id.linearLayout)
-        searchView = findViewById(R.id.searchView)
-        pleaseSearchView = findViewById(R.id.SearchTextView)
-        searchResults = findViewById(R.id.searchResultsLayout)
+        mainLayout = root.findViewById(R.id.linearLayout)
+        searchView = root.findViewById(R.id.searchView)
+        pleaseSearchView = root.findViewById(R.id.SearchTextView)
+        searchResults = root.findViewById(R.id.searchResultsLayout)
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -59,6 +65,8 @@ class SearchActivity : ComponentActivity() {
                 return false
             }
         })
+
+        return root
     }
 
     override fun onDestroy() {
@@ -93,8 +101,8 @@ class SearchActivity : ComponentActivity() {
             .filter { movie -> movie.popularity > 30 }
             .sortedByDescending { movie -> movie.popularity }
             .forEach { movie ->
-                val layout = LinearLayout(this)
-                val imageView = ImageView(this)
+                val layout = LinearLayout(requireContext())
+                val imageView = ImageView(requireContext())
 
                 Picasso.get()
                     .load("https://image.tmdb.org/t/p/w500${movie.posterPath}")
@@ -105,7 +113,7 @@ class SearchActivity : ComponentActivity() {
 
                 imageView.layoutParams = layoutParams
 
-                val title = TextView(this)
+                val title = TextView(requireContext())
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -121,9 +129,16 @@ class SearchActivity : ComponentActivity() {
                 layout.addView(title)
 
                 layout.setOnClickListener {
-                    val intent = Intent(this@SearchActivity, MovieActivity::class.java)
-                    intent.putExtra("movie", movie)
-                    startActivity(intent)
+                    val fragment = MovieFragment()
+                    val bundle = Bundle()
+                    bundle.putSerializable("movie", movie)
+                    fragment.arguments = bundle
+
+                    activity?.supportFragmentManager?.beginTransaction()?.apply {
+                        replace(R.id.FragmentLayout, fragment)
+                        addToBackStack(null)
+                        commit()
+                    }
                 }
 
                 searchResults.addView(layout)
