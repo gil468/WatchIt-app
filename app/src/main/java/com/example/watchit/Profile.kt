@@ -1,6 +1,7 @@
 package com.example.watchit
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,7 +12,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.Navigation
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.storage.storage
@@ -19,6 +22,7 @@ import com.squareup.picasso.Picasso
 
 class Profile : Fragment() {
 
+    private lateinit var root: View
     private var auth = Firebase.auth
     private val storage = Firebase.storage
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,50 +33,35 @@ class Profile : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_profile, container, false)
+    ): View {
+        root = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        setUserNameTextView(root)
-        setProfileImage(root)
+        setUserNameTextView()
+        setProfileImage()
         root.findViewById<Button>(R.id.MyReviewsButton).setOnClickListener{
-            toMyReviews()
+//            navigateToFragment(MyReviews())
+            Navigation.findNavController(root).navigate(R.id.action_profile_to_myReviews)
         }
         root.findViewById<Button>(R.id.EditMyProfileButton).setOnClickListener{
-            toEditMyProfile()
-
+            Navigation.findNavController(root).navigate(R.id.action_profile_to_editMyProfile)
         }
         root.findViewById<Button>(R.id.FollowingButton).setOnClickListener{
-            toFollowing()
+//            navigateToFragment(UserFollowing())
         }
         root.findViewById<Button>(R.id.LogOutButton).setOnClickListener{
             logOutUser()
         }
-
         return root
     }
 
-    private fun toFollowing() {
-        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.FragmentLayout,UserFollowing())
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
+//    private fun navigateToFragment(destFragment: Fragment) {
+//        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+//        transaction.replace(R.id.FragmentLayout, destFragment)
+//        transaction.addToBackStack(null)
+//        transaction.commit()
+//    }
 
-    private fun toEditMyProfile() {
-        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.FragmentLayout,EditMyProfile())
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-
-    private fun toMyReviews() {
-        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.FragmentLayout,MyReviews())
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-
-    private fun setProfileImage(root: View) {
+    private fun setProfileImage() {
         val imageRef = storage.reference.child("images/users/${auth.currentUser?.uid}")
 
         imageRef.downloadUrl.addOnSuccessListener {uri ->
@@ -82,7 +71,7 @@ class Profile : Fragment() {
         }
     }
 
-    private fun setUserNameTextView(root: View) {
+    private fun setUserNameTextView() {
         root.findViewById<TextView>(R.id.UserNameTextView).text = "${auth.currentUser?.displayName}"
     }
 
@@ -93,7 +82,10 @@ class Profile : Fragment() {
             "Logged out, Bye!",
             Toast.LENGTH_SHORT
         ).show()
-//            activity?.finish() //This close the app only if i am in the MainActivity
-        activity?.finishAffinity() //To check it's nor crashing the app
+
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        activity?.finish()
     }
 }

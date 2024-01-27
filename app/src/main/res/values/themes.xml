@@ -2,7 +2,8 @@
 <resources>
 
 <!--    <style name="Theme.WatchIt" parent="android:Theme.Material.Light.NoActionBar">-->
-    <style name="Theme.WatchIt" parent="Theme.AppCompat.Light.NoActionBar">
+<!--    <style name="Theme.WatchIt" parent="Theme.AppCompat.Light.NoActionBar">-->
+    <style name="Theme.WatchIt" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowFullscreen">true</item>
     </style>
 </resources>

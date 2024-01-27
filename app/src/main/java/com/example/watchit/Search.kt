@@ -11,6 +11,8 @@ import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.core.view.isNotEmpty
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.watchit.model.MovieApiResponse
 import com.squareup.picasso.Picasso
 import io.ktor.client.HttpClient
@@ -96,7 +98,6 @@ class Search : Fragment() {
                 }
             }.body()
 
-
         apiResponse.results
             .filter { movie -> movie.popularity > 30 }
             .sortedByDescending { movie -> movie.popularity }
@@ -129,16 +130,20 @@ class Search : Fragment() {
                 layout.addView(title)
 
                 layout.setOnClickListener {
-                    val fragment = MovieFragment()
-                    val bundle = Bundle()
-                    bundle.putSerializable("movie", movie)
-                    fragment.arguments = bundle
+//                    val fragment = MovieFragment()
+//                    val bundle = Bundle()
+//                    bundle.putSerializable("movie", movie)
+//                    fragment.arguments = bundle
 
-                    activity?.supportFragmentManager?.beginTransaction()?.apply {
-                        replace(R.id.FragmentLayout, fragment)
-                        addToBackStack(null)
-                        commit()
-                    }
+                    val action = SearchDirections.actionSearchToMovieFragment(movie)
+                    findNavController().navigate(action)
+                    Navigation.findNavController(root).navigate(R.id.action_search_to_movieFragment)
+
+//                    activity?.supportFragmentManager?.beginTransaction()?.apply {
+//                        replace(R.id.FragmentLayout, fragment)
+//                        addToBackStack(null)
+//                        commit()
+//                    }
                 }
 
                 searchResults.addView(layout)

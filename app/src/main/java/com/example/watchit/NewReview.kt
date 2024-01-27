@@ -17,16 +17,20 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import com.example.watchit.model.PublishReviewDTO
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
+import com.squareup.picasso.Picasso
 import java.util.Date
 import java.util.UUID
 
 class NewReview : Fragment() {
+    private val args by navArgs<MovieFragmentArgs>()
     private var selectedImageURI: Uri? = null
     private lateinit var root: View
 
@@ -51,6 +55,15 @@ class NewReview : Fragment() {
                         ).show()
                     } else {
                         selectedImageURI = imageUri
+
+//                        var moviePoster = ""
+//                        arguments?.let {
+//                            moviePoster = it.getString("moviePoster", "")
+//                        }
+//                        Picasso.get()
+//                            .load(moviePoster)
+//                            .into(root.findViewById<ImageView>(R.id.movieImageView))
+
                         root.findViewById<ImageView>(R.id.movieImageView).setImageURI(imageUri)
                     }
                 }
@@ -78,10 +91,14 @@ class NewReview : Fragment() {
     }
 
     private fun createReview(root: View) {
-        var movieId = 0
-        arguments?.let {
-            movieId = it.getInt("movieId", 0)
-        }
+        val movieId = args.selectedMovie.id
+        val movieName = args.selectedMovie.title
+        val moviePoster = args.selectedMovie.posterPath
+//        arguments?.let {
+//            movieId = it.getInt("movieId", 0)
+//            movieName = it.getString("movieName", "")
+//            moviePoster = it.getString("moviePoster", "")
+//        }
         ratingBar = root.findViewById(R.id.ratingTextNumber)
         descriptionEditText = root.findViewById(R.id.editTextTextMultiLine)
 
@@ -91,18 +108,19 @@ class NewReview : Fragment() {
 
             val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
             if (syntaxChecksResult) {
-                uploadReview(ratingInput.toDouble(), description, movieId)
+                uploadReview(ratingInput.toDouble(), description, movieId, movieName, moviePoster)
             }
         }
     }
 
-    private fun uploadReview(rating: Double, description: String, movieId: Int) {
+    private fun uploadReview(rating: Double, description: String, movieId: Int, movieName: String, moviePoster: String) {
         val reviewId = UUID.randomUUID().toString()
         val storageRef = storage.reference
         val userId = auth.currentUser!!.uid
 
         val imageRef = storageRef.child("images/reviews/$reviewId")
         imageRef.putFile(selectedImageURI!!).addOnFailureListener {
+            Log.d("Gil", "Error: ${it.message}")
             Toast.makeText(
                 requireContext(),
                 "failed!",
@@ -113,6 +131,7 @@ class NewReview : Fragment() {
                 .document(reviewId)
                 .set(
                     PublishReviewDTO(
+                        movieName,
                         rating,
                         userId,
                         description,
@@ -126,12 +145,14 @@ class NewReview : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
 
-            val fragment = Feed()
-            activity?.supportFragmentManager?.beginTransaction()?.apply {
-                replace(R.id.FragmentLayout, fragment)
-//                addToBackStack(null)
-                commit()
-            }
+            Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
+
+//            val fragment = Feed()
+//            activity?.supportFragmentManager?.beginTransaction()?.apply {
+//                replace(R.id.FragmentLayout, fragment)
+////                addToBackStack(null)
+//                commit()
+//            }
         }
     }
 

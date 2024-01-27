@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/Home"
+        android:id="@+id/feed"
         android:title="@string/home"
         android:enabled="true"
         android:icon="@drawable/baseline_home_24"/>
 
-    <item
-        android:id="@+id/Upload"
-        android:title="@string/upload"
-        android:enabled="true"
-        android:icon="@drawable/baseline_add_circle_outline_24"/>
+<!--    <item-->
+<!--        android:id="@+id/Upload"-->
+<!--        android:title="@string/upload"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/baseline_add_circle_outline_24"/>-->
 
     <item
-        android:id="@+id/Search"
+        android:id="@+id/search"
         android:title="@string/search"
         android:enabled="true"
         android:icon="@drawable/ic_search_white"/>
 
     <item
-        android:id="@+id/Profile"
+        android:id="@+id/profile"
         android:title="@string/profile"
         android:enabled="true"
         android:icon="@drawable/baseline_account_circle_24"/>

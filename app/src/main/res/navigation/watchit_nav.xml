@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/watchit_nav"
+    app:startDestination="@id/feed">
+    <fragment
+        android:id="@+id/feed"
+        android:name="com.example.watchit.Feed"
+        android:label="Feed" />
+    <fragment
+        android:id="@+id/search"
+        android:name="com.example.watchit.Search"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_search_to_movieFragment"
+            app:destination="@id/movieFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/profile"
+        android:name="com.example.watchit.Profile"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profile_to_editMyProfile"
+            app:destination="@id/editMyProfile"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_profile_to_myReviews"
+            app:destination="@id/myReviews"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/editMyProfile"
+        android:name="com.example.watchit.EditMyProfile"
+        android:label="fragment_edit_my_profile"
+        tools:layout="@layout/fragment_edit_my_profile" >
+    </fragment>
+    <fragment
+        android:id="@+id/myReviews"
+        android:name="com.example.watchit.MyReviews"
+        android:label="fragment_my_reviews"
+        tools:layout="@layout/fragment_my_reviews" />
+    <fragment
+        android:id="@+id/movieFragment"
+        android:name="com.example.watchit.MovieFragment"
+        android:label="MovieFragment" >
+        <action
+            android:id="@+id/action_movieFragment_to_newReview"
+            app:destination="@id/newReview"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <argument
+            android:name="selectedMovie"
+            app:argType="com.example.watchit.model.Movie" />
+    </fragment>
+    <fragment
+        android:id="@+id/newReview"
+        android:name="com.example.watchit.NewReview"
+        android:label="fragment_new_review"
+        tools:layout="@layout/fragment_new_review" >
+        <action
+            android:id="@+id/action_newReview_to_feed"
+            app:destination="@id/feed"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <argument
+            android:name="selectedMovie"
+            app:argType="com.example.watchit.model.Movie" />
+    </fragment>
+</navigation>

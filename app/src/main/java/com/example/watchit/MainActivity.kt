@@ -3,7 +3,12 @@ package com.example.watchit
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -12,32 +17,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val fragmentManager: FragmentManager = supportFragmentManager
-        val transaction = fragmentManager.beginTransaction()
-//        transaction.replace(R.id.FragmentLayout, FeedFragment())
-//        transaction.replace(R.id.FragmentLayout, SearchFragment())
-        transaction.replace(R.id.FragmentLayout, Profile())
-        transaction.addToBackStack(null)
-        transaction.commit()
-
         bottomMenu()
     }
 
     private fun bottomMenu() {
-        BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            when(item.itemId) {
-                R.id.Home -> {
-                    // Respond to navigation item 1 click
-                    Toast.makeText(this@MainActivity, "Home selected!", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.Upload -> {
-                    // Respond to navigation item 2 click
-                    Toast.makeText(this@MainActivity, "Upload selected!", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> false
-            }
-        }
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
+
+
+        NavigationUI.setupWithNavController(bottomNavigationView, navController)
     }
 }
