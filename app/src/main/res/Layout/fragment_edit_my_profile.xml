@@ -25,17 +25,17 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center"
-        android:src="@drawable/profile_pic_placeholder"/>
+        android:src="@drawable/profile_pic_placeholder" />
 
     <Button
         android:id="@+id/btnPickImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit profile picture" />
+        android:text="choose profile picture" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp"/>
+        android:layout_height="10dp" />
 
     <EditText
         android:id="@+id/editTextFirstName"
@@ -44,7 +44,7 @@
         android:ems="10"
         android:inputType="text"
         android:hint="First Name*"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/editTextLastName"
@@ -53,36 +53,11 @@
         android:ems="10"
         android:inputType="text"
         android:hint="Last Name*"
-        android:textSize="20sp"/>
-
-    <EditText
-        android:id="@+id/editTextEmailAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email Address*"
-        android:inputType="textEmailAddress"
-        android:textSize="20sp"
-        android:textColor="@color/black"/>
-
-    <EditText
-        android:id="@+id/editTextTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password*"
-        android:inputType="textPassword"
-        android:textSize="20sp"/>
-
-    <EditText
-        android:id="@+id/editTextTextConfirmPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Confirm Password*"
-        android:inputType="textPassword"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="20dp"/>
+        android:layout_height="20dp" />
 
     <Button
         android:id="@+id/UpdateButton"
@@ -91,6 +66,6 @@
         android:background="@drawable/mybutton"
         android:text="Update"
         android:textColor="#FFFF7B00"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
 </LinearLayout>
