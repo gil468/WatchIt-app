@@ -2,7 +2,6 @@ package com.example.watchit
 
 import android.os.Bundle
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.core.view.isNotEmpty
-import androidx.navigation.Navigation
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.model.MovieApiResponse
 import com.squareup.picasso.Picasso
@@ -130,20 +129,9 @@ class Search : Fragment() {
                 layout.addView(title)
 
                 layout.setOnClickListener {
-//                    val fragment = MovieFragment()
-//                    val bundle = Bundle()
-//                    bundle.putSerializable("movie", movie)
-//                    fragment.arguments = bundle
 
                     val action = SearchDirections.actionSearchToMovieFragment(movie)
                     findNavController().navigate(action)
-                    Navigation.findNavController(root).navigate(R.id.action_search_to_movieFragment)
-
-//                    activity?.supportFragmentManager?.beginTransaction()?.apply {
-//                        replace(R.id.FragmentLayout, fragment)
-//                        addToBackStack(null)
-//                        commit()
-//                    }
                 }
 
                 searchResults.addView(layout)

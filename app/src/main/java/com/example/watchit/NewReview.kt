@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.model.PublishReviewDTO
@@ -25,7 +25,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
-import com.squareup.picasso.Picasso
 import java.util.Date
 import java.util.UUID
 
@@ -73,6 +72,7 @@ class NewReview : Fragment() {
                     .show()
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -113,7 +113,13 @@ class NewReview : Fragment() {
         }
     }
 
-    private fun uploadReview(rating: Double, description: String, movieId: Int, movieName: String, moviePoster: String) {
+    private fun uploadReview(
+        rating: Double,
+        description: String,
+        movieId: Int,
+        movieName: String,
+        moviePoster: String
+    ) {
         val reviewId = UUID.randomUUID().toString()
         val storageRef = storage.reference
         val userId = auth.currentUser!!.uid

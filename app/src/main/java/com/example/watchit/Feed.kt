@@ -3,13 +3,13 @@ package com.example.watchit
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.example.watchit.model.PublishReviewDTO
 import com.example.watchit.model.User
 import com.google.firebase.Firebase
@@ -83,7 +83,15 @@ class Feed : Fragment() {
 
         val reviewCardRoot = layoutInflater.inflate(R.layout.reviews_feed_card, null)
 
-        populateReviewCard(movieName, userFullName, userImage, reviewDescription, reviewRating, reviewImage, reviewCardRoot)
+        populateReviewCard(
+            movieName,
+            userFullName,
+            userImage,
+            reviewDescription,
+            reviewRating,
+            reviewImage,
+            reviewCardRoot
+        )
         reviewsLayout.addView(reviewCardRoot)
     }
 
@@ -99,7 +107,8 @@ class Feed : Fragment() {
     ) {
 
         Picasso.get().load(reviewImage).into(reviewCardRoot.findViewById<ImageView>(R.id.CardImage))
-        Picasso.get().load(userImage).into(reviewCardRoot.findViewById<ImageView>(R.id.ProfileImageView))
+        Picasso.get().load(userImage)
+            .into(reviewCardRoot.findViewById<ImageView>(R.id.ProfileImageView))
         reviewCardRoot.findViewById<TextView>(R.id.ProfileName).text = userFullName
         reviewCardRoot.findViewById<TextView>(R.id.MovieName).text = movieName
         reviewCardRoot.findViewById<TextView>(R.id.ReviewDescription).text = reviewDescription

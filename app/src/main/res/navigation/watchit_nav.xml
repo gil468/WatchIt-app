@@ -12,7 +12,7 @@
         android:id="@+id/search"
         android:name="com.example.watchit.Search"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_search_to_movieFragment"
             app:destination="@id/movieFragment"
@@ -23,7 +23,7 @@
         android:id="@+id/profile"
         android:name="com.example.watchit.Profile"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profile_to_editMyProfile"
             app:destination="@id/editMyProfile"
@@ -39,7 +39,12 @@
         android:id="@+id/editMyProfile"
         android:name="com.example.watchit.EditMyProfile"
         android:label="fragment_edit_my_profile"
-        tools:layout="@layout/fragment_edit_my_profile" >
+        tools:layout="@layout/fragment_edit_my_profile">
+        <action
+            android:id="@+id/action_editMyProfile_to_profile"
+            app:destination="@id/profile"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/myReviews"
@@ -49,7 +54,7 @@
     <fragment
         android:id="@+id/movieFragment"
         android:name="com.example.watchit.MovieFragment"
-        android:label="MovieFragment" >
+        android:label="MovieFragment">
         <action
             android:id="@+id/action_movieFragment_to_newReview"
             app:destination="@id/newReview"
@@ -63,7 +68,7 @@
         android:id="@+id/newReview"
         android:name="com.example.watchit.NewReview"
         android:label="fragment_new_review"
-        tools:layout="@layout/fragment_new_review" >
+        tools:layout="@layout/fragment_new_review">
         <action
             android:id="@+id/action_newReview_to_feed"
             app:destination="@id/feed"

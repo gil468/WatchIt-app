@@ -1,16 +1,14 @@
 package com.example.watchit
 
-import android.os.Build
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.navigation.Navigation
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.model.Movie
@@ -52,27 +50,8 @@ class MovieFragment : Fragment() {
     }
 
     private fun addAddReviewOnClickHandler() {
-        val movieId = movie.id
-        val movieName = movie.title
-//        val moviePoster = "https://image.tmdb.org/t/p/w500${movie.backdropPath}"
-        val fragment = NewReview()
-        val bundle = Bundle()
-
-        bundle.putInt("movieId", movieId)
-        bundle.putString("movieName", movieName)
-//        bundle.putString("moviePoster", moviePoster)
-        fragment.arguments = bundle
-
         val action = MovieFragmentDirections.actionMovieFragmentToNewReview(movie)
         findNavController().navigate(action)
-
-        Navigation.findNavController(root).navigate(R.id.action_movieFragment_to_newReview)
-
-//        activity?.supportFragmentManager?.beginTransaction()?.apply {
-//            replace(R.id.FragmentLayout, fragment)
-//            addToBackStack(null)
-//            commit()
-//        }
     }
 
     private fun loadMovieDetails(root: View) {
