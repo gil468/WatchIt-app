@@ -50,7 +50,7 @@
         android:id="@+id/myReviews"
         android:name="com.example.watchit.modules.myReviews.MyReviews"
         android:label="fragment_my_reviews"
-        tools:layout="@layout/fragment_my_reviews" />
+        tools:layout="@layout/fragment_feed" />
     <fragment
         android:id="@+id/movieFragment"
         android:name="com.example.watchit.modules.search.MovieFragment"

@@ -1,115 +1,81 @@
 package com.example.watchit.modules.myReviews
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.watchit.R
-import com.example.watchit.data.review.PublishReviewDTO
-import com.example.watchit.data.user.PublishUserDTO
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
-import com.google.firebase.storage.storage
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.watchit.data.Model
+import com.example.watchit.databinding.FragmentFeedBinding
 
 class MyReviews : Fragment() {
-    private lateinit var reviewsLayout: LinearLayout
-    private lateinit var root: View
-    private val db = Firebase.firestore
-    private val storage = Firebase.storage
-    private var auth = Firebase.auth
+    private var reviewsRecyclerView: RecyclerView? = null
+    private var adapter: MyReviewsRecycleAdapter? = null
+
+    private var _binding: FragmentFeedBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var viewModel: MyReviewsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        root = inflater.inflate(R.layout.fragment_my_reviews, container, false)
 
-        reviewsLayout = root.findViewById(R.id.myReviewsFeed)
-        fetchReviews()
+        _binding = FragmentFeedBinding.inflate(inflater, container, false)
+        val view = binding.root
 
-        return root
+        viewModel = ViewModelProvider(this)[MyReviewsViewModel::class.java]
+
+        viewModel.reviews = Model.instance.getMyReviews()
+        viewModel.user = Model.instance.getCurrentUser()
+
+        reviewsRecyclerView = binding.reviewsFeed
+        reviewsRecyclerView?.setHasFixedSize(true)
+        reviewsRecyclerView?.layoutManager = LinearLayoutManager(context)
+        adapter = MyReviewsRecycleAdapter(viewModel.reviews?.value, viewModel.user?.value)
+
+        reviewsRecyclerView?.adapter = adapter
+
+
+        viewModel.reviews?.observe(viewLifecycleOwner) {
+            adapter?.reviews = it
+            adapter?.notifyDataSetChanged()
+        }
+
+        viewModel.user?.observe(viewLifecycleOwner) {
+            adapter?.user = it
+            adapter?.notifyDataSetChanged()
+        }
+
+        binding.pullToRefresh.setOnRefreshListener {
+            reloadData()
+        }
+
+        Model.instance.reviewsListLoadingState.observe(viewLifecycleOwner) { state ->
+            binding.pullToRefresh.isRefreshing = state == Model.LoadingState.LOADING
+        }
+
+        return view
     }
 
-    private fun fetchReviews() {
-        Firebase.firestore
-            .collection("reviews")
-            .whereEqualTo("userId", auth.currentUser?.uid)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { reviewsDocuments ->
-                reviewsDocuments.forEach { reviewDocument ->
-                    val review = reviewDocument.toObject<PublishReviewDTO>()
-                    val reviewId = reviewDocument.id
 
-                    runBlocking { addReviewToFeed(review, reviewId) }
-                }
-            }
+    override fun onResume() {
+        super.onResume()
+        reloadData()
     }
 
-    private suspend fun addReviewToFeed(
-        review: PublishReviewDTO,
-        reviewId: String
-    ) {
-        val userId = review.userId!!
-        val user = db.collection("users")
-            .document(userId)
-            .get()
-            .await()
-            .toObject<PublishUserDTO>()!!
-
-        val reviewDescription = review.description!!
-        val reviewRating = review.score!!
-        //val Movie
-        val movieName = review.movieName!!
-        val date = review.timestamp
-        val userFullName = "${user.firstName} ${user.lastName}"
-        val userImage = storage.reference.child("images/users/$userId")
-            .downloadUrl
-            .await()
-        val reviewImage = storage.reference.child("images/reviews/$reviewId")
-            .downloadUrl
-            .await()
-
-        val reviewCardRoot = layoutInflater.inflate(R.layout.my_reviews_feed_card, null)
-
-        populateReviewCard(
-            movieName,
-            userFullName,
-            userImage,
-            reviewDescription,
-            reviewRating,
-            reviewImage,
-            reviewCardRoot
-        )
-        reviewsLayout.addView(reviewCardRoot)
+    private fun reloadData() {
+        Model.instance.refreshAllUsers()
+        Model.instance.refreshAllReviews()
     }
 
-    private fun populateReviewCard(
-        movieName: String,
-        userFullName: String,
-        userImage: Uri,
-        reviewDescription: String,
-        reviewRating: Double,
-        reviewImage: Uri,
-        reviewCardRoot: View
-    ) {
-        Picasso.get().load(reviewImage).into(reviewCardRoot.findViewById<ImageView>(R.id.CardImage))
-        Picasso.get().load(userImage)
-            .into(reviewCardRoot.findViewById<ImageView>(R.id.ProfileImageView))
-        reviewCardRoot.findViewById<TextView>(R.id.ProfileName).text = userFullName
-        reviewCardRoot.findViewById<TextView>(R.id.MovieName).text = movieName
-        reviewCardRoot.findViewById<TextView>(R.id.ReviewDescription).text = reviewDescription
-        reviewCardRoot.findViewById<TextView>(R.id.ReviewRating).text = "Rating: $reviewRating ★"
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

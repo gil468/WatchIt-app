@@ -6,7 +6,7 @@
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
     android:orientation="vertical"
-    tools:context=".Modules.search.NewReview">
+    tools:context=".modules.search.NewReview">
 
     <ImageView
         android:id="@+id/movieImageView"

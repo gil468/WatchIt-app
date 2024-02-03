@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import java.util.concurrent.Executors
 
 class Model private constructor() {
@@ -32,9 +34,18 @@ class Model private constructor() {
         return reviews ?: database.reviewDao().getAll()
     }
 
+    fun getMyReviews(): LiveData<MutableList<Review>> {
+        refreshAllReviews()
+        return reviews ?: database.reviewDao().getReviewsByUserId(Firebase.auth.currentUser?.uid!!)
+    }
+
     fun getAllUsers(): LiveData<MutableList<User>> {
         refreshAllUsers()
         return users ?: database.userDao().getAll()
+    }
+
+    fun getCurrentUser(): LiveData<User> {
+        return database.userDao().getUserById(Firebase.auth.currentUser?.uid!!)
     }
 
     fun refreshAllUsers() {
