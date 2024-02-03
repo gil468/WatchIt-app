@@ -1,4 +1,4 @@
-package com.example.watchit
+package com.example.watchit.Modules.search
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -19,7 +19,10 @@ import androidx.annotation.RequiresExtension
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
+import com.example.watchit.R
+import com.example.watchit.data.Model
 import com.example.watchit.data.review.PublishReviewDTO
+import com.example.watchit.data.review.Review
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
@@ -127,14 +130,19 @@ class NewReview : Fragment() {
                         movieId
                     )
                 )
-            Toast.makeText(
-                requireContext(),
-                "Review uploaded Successfully",
-                Toast.LENGTH_SHORT
-            ).show()
 
-            Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
+            val review = Review(
+                reviewId,
+                rating,
+                userId,
+                description,
+                movieName,
+                "asd"
+            )
 
+            Model.instance.addReview(review) {
+                Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
+            }
         }
     }
 

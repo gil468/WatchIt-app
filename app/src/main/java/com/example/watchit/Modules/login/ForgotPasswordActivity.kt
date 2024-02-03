@@ -1,4 +1,4 @@
-package com.example.watchit
+package com.example.watchit.Modules.login
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -9,6 +9,8 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.example.watchit.MainActivity
+import com.example.watchit.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
@@ -41,7 +43,8 @@ class ForgotPasswordActivity : ComponentActivity() {
     private fun sendResetPasswordLink() {
         auth = Firebase.auth
         findViewById<Button>(R.id.ResetPasswordButton).setOnClickListener {
-            val email = findViewById<TextInputEditText>(R.id.editTextEmailAddress).text.toString().trim()
+            val email =
+                findViewById<TextInputEditText>(R.id.editTextEmailAddress).text.toString().trim()
             val syntaxChecksResult = validateUserEmail(email)
             if (syntaxChecksResult) {
                 db.collection("users").whereEqualTo("email", email).get()
@@ -72,8 +75,8 @@ class ForgotPasswordActivity : ComponentActivity() {
                             }
                         }
                     }.addOnFailureListener { exception ->
-                    Log.d("Fail", exception.message.toString())
-                }
+                        Log.d("Fail", exception.message.toString())
+                    }
             }
         }
     }

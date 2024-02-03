@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    tools:context=".MyReviews">
+    tools:context=".Modules.profile.MyReviews">
 
     <TextView
         android:id="@+id/WelcomeTextView"
@@ -33,6 +33,6 @@
             android:id="@+id/myReviewsFeed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
     </ScrollView>
 </LinearLayout>

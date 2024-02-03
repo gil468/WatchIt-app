@@ -6,11 +6,11 @@
     app:startDestination="@id/feed">
     <fragment
         android:id="@+id/feed"
-        android:name="com.example.watchit.Feed"
+        android:name="com.example.watchit.Modules.feed.Feed"
         android:label="Feed" />
     <fragment
         android:id="@+id/search"
-        android:name="com.example.watchit.Search"
+        android:name="com.example.watchit.Modules.search.Search"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search">
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/profile"
-        android:name="com.example.watchit.Profile"
+        android:name="com.example.watchit.Modules.profile.Profile"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
         <action
@@ -37,7 +37,7 @@
     </fragment>
     <fragment
         android:id="@+id/editMyProfile"
-        android:name="com.example.watchit.EditMyProfile"
+        android:name="com.example.watchit.Modules.profile.EditMyProfile"
         android:label="fragment_edit_my_profile"
         tools:layout="@layout/fragment_edit_my_profile">
         <action
@@ -48,12 +48,12 @@
     </fragment>
     <fragment
         android:id="@+id/myReviews"
-        android:name="com.example.watchit.MyReviews"
+        android:name="com.example.watchit.Modules.profile.MyReviews"
         android:label="fragment_my_reviews"
         tools:layout="@layout/fragment_my_reviews" />
     <fragment
         android:id="@+id/movieFragment"
-        android:name="com.example.watchit.MovieFragment"
+        android:name="com.example.watchit.Modules.search.MovieFragment"
         android:label="MovieFragment">
         <action
             android:id="@+id/action_movieFragment_to_newReview"
@@ -66,7 +66,7 @@
     </fragment>
     <fragment
         android:id="@+id/newReview"
-        android:name="com.example.watchit.NewReview"
+        android:name="com.example.watchit.Modules.search.NewReview"
         android:label="fragment_new_review"
         tools:layout="@layout/fragment_new_review">
         <action

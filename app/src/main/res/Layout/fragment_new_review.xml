@@ -6,7 +6,7 @@
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
     android:orientation="vertical"
-    tools:context=".NewReview">
+    tools:context=".Modules.search.NewReview">
 
     <ImageView
         android:id="@+id/movieImageView"
@@ -24,18 +24,18 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp"/>
+        android:layout_height="10dp" />
 
     <EditText
         android:id="@+id/editTextTextMultiLine"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:inputType="textMultiLine"
-        android:hint="Please fill your review here"/>
+        android:hint="Please fill your review here" />
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="20dp"/>
+        android:layout_height="20dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:paddingRight="10dp"/>
+            android:paddingRight="10dp" />
 
         <EditText
             android:id="@+id/ratingTextNumber"
@@ -66,13 +66,13 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/star"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center" />
 
     </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="20dp"/>
+        android:layout_height="20dp" />
 
     <Button
         android:id="@+id/uploadButton"
@@ -81,6 +81,6 @@
         android:background="@drawable/mybutton"
         android:text="Upload"
         android:textColor="#FFFF7B00"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
 </LinearLayout>

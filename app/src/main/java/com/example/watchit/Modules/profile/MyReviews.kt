@@ -1,4 +1,4 @@
-package com.example.watchit
+package com.example.watchit.Modules.profile
 
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.watchit.R
 import com.example.watchit.data.review.PublishReviewDTO
 import com.example.watchit.data.user.PublishUserDTO
 import com.google.firebase.Firebase

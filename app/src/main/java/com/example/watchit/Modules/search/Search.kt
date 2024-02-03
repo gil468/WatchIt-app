@@ -1,4 +1,4 @@
-package com.example.watchit
+package com.example.watchit.Modules.search
 
 import android.os.Bundle
 import android.view.Gravity
@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.watchit.R
 import com.example.watchit.data.Movie.MovieApiResponse
 import com.squareup.picasso.Picasso
 import io.ktor.client.HttpClient

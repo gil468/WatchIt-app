@@ -1,10 +1,13 @@
-package com.example.watchit
+package com.example.watchit.Modules.feed
 
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.watchit.R
 import com.example.watchit.data.review.Review
+import com.example.watchit.data.user.User
 import com.squareup.picasso.Picasso
 
 class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,14 +29,18 @@ class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         reviewRating = itemView.findViewById(R.id.ReviewRating)
     }
 
-    fun bind(review: Review) {
-        Picasso.get().load(review.reviewImage)
+    fun bind(review: Review?, reviewer: User?) {
+        Log.d("TAG", "review ${review?.score}")
+        Picasso.get()
+            .load(review?.reviewImage)
             .into(reviewImageView)
-        Picasso.get().load(review.reviewImage)
+        Picasso.get()
+            .load(reviewer?.profileImage)
             .into(profileImageView)
-        profileName?.text = review.userId
-        movieName?.text = review.movieName
-        reviewDescription?.text = review.description
-        reviewRating?.text = "Rating: ${review.score} ★"
+        val reviewerName = "${reviewer?.firstName ?: ""} ${reviewer?.lastName ?: ""}"
+        profileName?.text = reviewerName
+        movieName?.text = review?.movieName
+        reviewDescription?.text = review?.description
+        reviewRating?.text = "Rating: ${review?.score} ★"
     }
 }

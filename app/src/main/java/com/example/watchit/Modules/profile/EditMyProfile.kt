@@ -1,4 +1,4 @@
-package com.example.watchit
+package com.example.watchit.Modules.profile
 
 import android.content.Intent
 import android.net.Uri
@@ -19,6 +19,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.watchit.R
 import com.example.watchit.data.user.PublishUserDTO
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest

@@ -1,4 +1,4 @@
-package com.example.watchit
+package com.example.watchit.Modules.search
 
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.watchit.R
 import com.example.watchit.data.Movie.Movie
 import com.squareup.picasso.Picasso
 

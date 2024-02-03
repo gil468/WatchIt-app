@@ -1,14 +1,18 @@
-package com.example.watchit
+package com.example.watchit.Modules.feed
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.watchit.R
 import com.example.watchit.data.review.Review
+import com.example.watchit.data.user.User
 
-class ReviewsRecycleAdapter(private val data: MutableList<Review>) :
+class ReviewsRecycleAdapter(var reviews: MutableList<Review>?, var users: MutableList<User>?) :
     RecyclerView.Adapter<ReviewViewHolder>() {
+
     override fun getItemCount(): Int {
-        return data.size
+        return reviews?.size ?: 0
     }
 
 
@@ -19,7 +23,8 @@ class ReviewsRecycleAdapter(private val data: MutableList<Review>) :
     }
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
-        val review = data[position]
-        holder.bind(review)
+        val review = reviews?.get(position)
+        Log.d("TAG", "reviews size ${reviews?.size}")
+        holder.bind(review, users?.find { it.id == review?.userId })
     }
 }
