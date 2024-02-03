@@ -13,7 +13,7 @@ import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.R
-import com.example.watchit.data.Movie.MovieApiResponse
+import com.example.watchit.data.movie.MovieApiResponse
 import com.squareup.picasso.Picasso
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

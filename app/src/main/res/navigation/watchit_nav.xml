@@ -62,7 +62,7 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <argument
             android:name="selectedMovie"
-            app:argType="com.example.watchit.data.Movie.Movie" />
+            app:argType="com.example.watchit.data.movie.Movie" />
     </fragment>
     <fragment
         android:id="@+id/newReview"
@@ -76,6 +76,6 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <argument
             android:name="selectedMovie"
-            app:argType="com.example.watchit.data.Movie.Movie" />
+            app:argType="com.example.watchit.data.movie.Movie" />
     </fragment>
 </navigation>

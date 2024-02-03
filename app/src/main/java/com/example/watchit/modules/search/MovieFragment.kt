@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
-import com.example.watchit.data.Movie.Movie
+import com.example.watchit.data.movie.Movie
 import com.squareup.picasso.Picasso
 
 

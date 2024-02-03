@@ -1,4 +1,4 @@
-package com.example.watchit.data.Movie
+package com.example.watchit.data.movie
 
 data class MovieApiResponse(
     val results: Array<Movie>
