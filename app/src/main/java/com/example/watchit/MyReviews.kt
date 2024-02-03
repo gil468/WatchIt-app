@@ -9,8 +9,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.watchit.model.PublishReviewDTO
-import com.example.watchit.model.User
+import com.example.watchit.data.review.PublishReviewDTO
+import com.example.watchit.data.user.PublishUserDTO
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.Query
@@ -69,10 +69,10 @@ class MyReviews : Fragment() {
             .document(userId)
             .get()
             .await()
-            .toObject<User>()!!
+            .toObject<PublishUserDTO>()!!
 
         val reviewDescription = review.description!!
-        val reviewRating = review.rating!!
+        val reviewRating = review.score!!
         //val Movie
         val movieName = review.movieName!!
         val date = review.timestamp

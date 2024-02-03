@@ -19,7 +19,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.watchit.model.User
+import com.example.watchit.data.user.PublishUserDTO
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
@@ -28,10 +28,10 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.storage
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 
 class EditMyProfile : Fragment() {
 
@@ -77,10 +77,17 @@ class EditMyProfile : Fragment() {
 
         root.findViewById<Button>(R.id.UpdateButton).setOnClickListener {
             if (validateUserUpdate()) {
-                if (firstNameChanged || lastNameChanged) updateUser()
-                if (imageChanged) updateUserImage()
+                lifecycleScope.launch {
+                    val changes = listOf(
+                        async { if (firstNameChanged || lastNameChanged) updateUser() },
+                        async { if (imageChanged) updateUserImage() }
+                    )
 
-                findNavController().navigate(R.id.action_editMyProfile_to_profile)
+                    changes.awaitAll()
+                }.invokeOnCompletion {
+                    findNavController().navigate(R.id.action_editMyProfile_to_profile)
+                }
+
             } else {
                 Toast.makeText(
                     requireContext(), "invalid details", Toast.LENGTH_SHORT
@@ -106,7 +113,7 @@ class EditMyProfile : Fragment() {
         db.collection("users")
             .document(currentUser.uid).get().addOnSuccessListener {
                 if (it.exists()) {
-                    val user = it.toObject<User>()!!
+                    val user = it.toObject<PublishUserDTO>()!!
                     firstNameEditText.setText(user.firstName)
                     lastNameEditText.setText(user.lastName)
 
@@ -139,7 +146,7 @@ class EditMyProfile : Fragment() {
         }
     }
 
-    private fun updateUser() {
+    private suspend fun updateUser() {
         val firstName = firstNameEditText.text.toString().trim()
         val lastName = lastNameEditText.text.toString().trim()
 
@@ -152,42 +159,36 @@ class EditMyProfile : Fragment() {
         currentUser.updateProfile(profileUpdates)
 
 
-        lifecycleScope.launch {
-            try {
-                db.collection("users")
-                    .document(currentUser.uid)
-                    .update(
-                        mapOf(
-                            "firstName" to firstName,
-                            "lastName" to lastName,
-                        )
-                    ).await()
-                Toast.makeText(requireContext(), "Update Successful", Toast.LENGTH_SHORT)
-                    .show()
-            } catch (e: Exception) {
-                Log.d("UpdateUserInfo", "Error: ${e.message}")
-            }
+        try {
+            db.collection("users")
+                .document(currentUser.uid)
+                .update(
+                    mapOf(
+                        "firstName" to firstName,
+                        "lastName" to lastName,
+                    )
+                ).await()
+            Toast.makeText(requireContext(), "Update Successful", Toast.LENGTH_SHORT)
+                .show()
+        } catch (e: Exception) {
+            Log.d("UpdateUserInfo", "Error: ${e.message}")
         }
     }
 
-    private fun updateUserImage() {
+    private suspend fun updateUserImage() {
         val currentUser = auth.currentUser!!
-        lifecycleScope.launch {
-            val imageRef = storage.reference.child("images/users/${currentUser.uid}")
-            try {
-                withContext(Dispatchers.IO) {
+        val imageRef = storage.reference.child("images/users/${currentUser.uid}")
+        try {
 
-                    val uploadTask: UploadTask = imageRef.putFile(selectedImageURI!!)
-                    uploadTask.await()
-                }
+            val uploadTask: UploadTask = imageRef.putFile(selectedImageURI)
+            uploadTask.await()
 
-                Toast.makeText(requireContext(), "Upload Image Successful", Toast.LENGTH_SHORT)
-                    .show()
-            } catch (e: Exception) {
-                Log.d("UserImageUpdate", "Error: ${e.message}\n trace: ${e.stackTrace}")
-                Toast.makeText(requireContext(), "Profile image update failed!", Toast.LENGTH_SHORT)
-                    .show()
-            }
+            Toast.makeText(requireContext(), "Upload Image Successful", Toast.LENGTH_SHORT)
+                .show()
+        } catch (e: Exception) {
+            Log.d("UserImageUpdate", "Error: ${e.message}\n trace: ${e.stackTrace}")
+            Toast.makeText(requireContext(), "Profile image update failed!", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 

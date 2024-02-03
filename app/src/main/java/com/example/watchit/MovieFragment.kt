@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.watchit.model.Movie
+import com.example.watchit.data.Movie.Movie
 import com.squareup.picasso.Picasso
 
 

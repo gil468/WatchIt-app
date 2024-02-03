@@ -1,8 +1,8 @@
-package com.example.watchit.model
+package com.example.watchit.data.user
 
 import java.io.Serializable
 
-data class User(
+data class PublishUserDTO(
     var firstName: String,
     var lastName: String,
     var email: String,

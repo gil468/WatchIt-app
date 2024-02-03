@@ -1,4 +1,4 @@
-package com.example.watchit.model
+package com.example.watchit.data.Movie
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

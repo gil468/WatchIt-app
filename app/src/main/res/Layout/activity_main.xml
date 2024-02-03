@@ -19,15 +19,7 @@
         android:id="@+id/space"
         android:layout_width="match_parent"
         android:layout_below="@id/TitleTextView"
-        android:layout_height="10dp"/>
-
-<!--    <FrameLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:layout_below="@id/space"-->
-<!--        android:layout_above="@+id/bottom_navigation"-->
-<!--        android:id="@+id/FragmentLayout">-->
-<!--    </FrameLayout>-->
+        android:layout_height="10dp" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"

@@ -14,12 +14,12 @@
         android:roundIcon="@mipmap/watchit_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WatchIt"
+        android:name="com.example.watchit.WatchItApplication"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.WatchIt">
-        </activity>
+            android:theme="@style/Theme.WatchIt" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"

@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.watchit.model.MovieApiResponse
+import com.example.watchit.data.Movie.MovieApiResponse
 import com.squareup.picasso.Picasso
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -71,7 +71,7 @@ class Search : Fragment() {
     }
 
     override fun onDestroy() {
-        httpClient.close()
+        if (this::httpClient.isInitialized) httpClient.close()
         super.onDestroy()
     }
 

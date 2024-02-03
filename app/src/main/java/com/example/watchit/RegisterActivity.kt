@@ -16,7 +16,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresExtension
-import com.example.watchit.model.User
+import com.example.watchit.data.user.PublishUserDTO
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
@@ -98,7 +98,7 @@ class RegisterActivity : ComponentActivity() {
                     }.addOnSuccessListener {
                         db.collection("users")
                             .document(user.uid)
-                            .set(User(firstName, lastName, email, password))
+                            .set(PublishUserDTO(firstName, lastName, email, password))
                     }
 
                     Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT)

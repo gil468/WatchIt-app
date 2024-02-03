@@ -19,7 +19,7 @@ import androidx.annotation.RequiresExtension
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.example.watchit.model.PublishReviewDTO
+import com.example.watchit.data.review.PublishReviewDTO
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
@@ -55,14 +55,6 @@ class NewReview : Fragment() {
                     } else {
                         selectedImageURI = imageUri
 
-//                        var moviePoster = ""
-//                        arguments?.let {
-//                            moviePoster = it.getString("moviePoster", "")
-//                        }
-//                        Picasso.get()
-//                            .load(moviePoster)
-//                            .into(root.findViewById<ImageView>(R.id.movieImageView))
-
                         root.findViewById<ImageView>(R.id.movieImageView).setImageURI(imageUri)
                     }
                 }
@@ -72,10 +64,6 @@ class NewReview : Fragment() {
                     .show()
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
     override fun onCreateView(
@@ -93,12 +81,7 @@ class NewReview : Fragment() {
     private fun createReview(root: View) {
         val movieId = args.selectedMovie.id
         val movieName = args.selectedMovie.title
-        val moviePoster = args.selectedMovie.posterPath
-//        arguments?.let {
-//            movieId = it.getInt("movieId", 0)
-//            movieName = it.getString("movieName", "")
-//            moviePoster = it.getString("moviePoster", "")
-//        }
+
         ratingBar = root.findViewById(R.id.ratingTextNumber)
         descriptionEditText = root.findViewById(R.id.editTextTextMultiLine)
 
@@ -108,7 +91,7 @@ class NewReview : Fragment() {
 
             val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
             if (syntaxChecksResult) {
-                uploadReview(ratingInput.toDouble(), description, movieId, movieName, moviePoster)
+                uploadReview(ratingInput.toDouble(), description, movieId, movieName)
             }
         }
     }
@@ -117,8 +100,7 @@ class NewReview : Fragment() {
         rating: Double,
         description: String,
         movieId: Int,
-        movieName: String,
-        moviePoster: String
+        movieName: String
     ) {
         val reviewId = UUID.randomUUID().toString()
         val storageRef = storage.reference
@@ -153,12 +135,6 @@ class NewReview : Fragment() {
 
             Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
 
-//            val fragment = Feed()
-//            activity?.supportFragmentManager?.beginTransaction()?.apply {
-//                replace(R.id.FragmentLayout, fragment)
-////                addToBackStack(null)
-//                commit()
-//            }
         }
     }
 
