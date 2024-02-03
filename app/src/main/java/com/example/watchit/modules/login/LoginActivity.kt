@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.login
+package com.example.watchit.modules.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,8 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.watchit.MainActivity
-import com.example.watchit.Modules.register.RegisterActivity
 import com.example.watchit.R
+import com.example.watchit.modules.register.RegisterActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase

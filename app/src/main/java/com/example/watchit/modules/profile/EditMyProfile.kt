@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.profile
+package com.example.watchit.modules.profile
 
 import android.content.Intent
 import android.net.Uri

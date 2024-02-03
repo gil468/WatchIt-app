@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.register
+package com.example.watchit.modules.register
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -17,9 +17,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.RequiresExtension
 import com.example.watchit.MainActivity
-import com.example.watchit.Modules.login.LoginActivity
 import com.example.watchit.R
 import com.example.watchit.data.user.PublishUserDTO
+import com.example.watchit.modules.login.LoginActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase

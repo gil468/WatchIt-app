@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.profile
+package com.example.watchit.modules.myReviews
 
 import android.net.Uri
 import android.os.Bundle
@@ -28,10 +28,6 @@ class MyReviews : Fragment() {
     private val db = Firebase.firestore
     private val storage = Firebase.storage
     private var auth = Firebase.auth
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

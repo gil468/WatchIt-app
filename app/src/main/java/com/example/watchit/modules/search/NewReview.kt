@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.search
+package com.example.watchit.modules.search
 
 import android.annotation.SuppressLint
 import android.content.Intent

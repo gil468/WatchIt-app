@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.login
+package com.example.watchit.modules.login
 
 import android.annotation.SuppressLint
 import android.content.Intent

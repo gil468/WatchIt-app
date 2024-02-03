@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.feed
+package com.example.watchit.modules.feed
 
 import android.util.Log
 import android.view.View

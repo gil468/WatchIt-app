@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.feed
+package com.example.watchit.modules.feed
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +14,6 @@ class ReviewsRecycleAdapter(var reviews: MutableList<Review>?, var users: Mutabl
     override fun getItemCount(): Int {
         return reviews?.size ?: 0
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
         val itemView = LayoutInflater.from(parent.context)

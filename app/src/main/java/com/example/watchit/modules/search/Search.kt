@@ -1,4 +1,4 @@
-package com.example.watchit.Modules.search
+package com.example.watchit.modules.search
 
 import android.os.Bundle
 import android.view.Gravity
@@ -33,9 +33,6 @@ class Search : Fragment() {
     private lateinit var pleaseSearchView: TextView
     private lateinit var searchResults: LinearLayout
     private lateinit var httpClient: HttpClient
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
