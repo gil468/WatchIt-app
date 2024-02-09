@@ -1,5 +1,6 @@
 package com.example.watchit.data
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.watchit.data.review.Review
@@ -79,8 +80,10 @@ class Model private constructor() {
         firebaseModel.getAllReviews(lastUpdated) { list ->
             var time = lastUpdated
             for (review in list) {
-                if (review.isDeleted == true) {
-                    database.reviewDao().delete(review)
+                if (review.isDeleted) {
+                    reviewsExecutor.execute {
+                        database.reviewDao().delete(review)
+                    }
                 } else {
                     firebaseModel.getImage("reviews", review.id) { uri ->
                         reviewsExecutor.execute {
@@ -100,10 +103,12 @@ class Model private constructor() {
         }
     }
 
-    fun addReview(review: Review, callback: () -> Unit) {
+    fun addReview(review: Review, selectedImageUri: Uri, callback: () -> Unit) {
         firebaseModel.addReview(review) {
-            refreshAllReviews()
-            callback()
+            firebaseModel.addReviewImage(review.id, selectedImageUri) {
+                refreshAllReviews()
+                callback()
+            }
         }
     }
 
@@ -119,6 +124,21 @@ class Model private constructor() {
             refreshAllReviews()
             callback()
         }
+    }
+
+    fun updateReviewImage(reviewId: String, selectedImageUri: Uri, callback: () -> Unit) {
+        firebaseModel.addReviewImage(reviewId, selectedImageUri) {
+            refreshAllReviews()
+            callback()
+        }
+    }
+
+    fun getUserImage(imageId: String, callback: (Uri) -> Unit) {
+        firebaseModel.getImage("users", imageId, callback);
+    }
+
+    fun getReviewImage(imageId: String, callback: (Uri) -> Unit) {
+        firebaseModel.getImage("reviews", imageId, callback);
     }
 
     fun addUser(user: User, callback: () -> Unit) {

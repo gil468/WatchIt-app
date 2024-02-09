@@ -13,12 +13,12 @@ import com.example.watchit.databinding.FragmentFeedBinding
 
 class Feed : Fragment() {
     var reviewsRecyclerView: RecyclerView? = null
-    var adapter: ReviewsRecycleAdapter? = null
+    var adapter: FeedRecycleAdapter? = null
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: ReviewViewModel
+    private lateinit var viewModel: FeedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,7 +28,7 @@ class Feed : Fragment() {
         _binding = FragmentFeedBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        viewModel = ViewModelProvider(this)[ReviewViewModel::class.java]
+        viewModel = ViewModelProvider(this)[FeedViewModel::class.java]
 
         viewModel.reviews = Model.instance.getAllReviews()
         viewModel.users = Model.instance.getAllUsers()
@@ -36,7 +36,7 @@ class Feed : Fragment() {
         reviewsRecyclerView = binding.reviewsFeed
         reviewsRecyclerView?.setHasFixedSize(true)
         reviewsRecyclerView?.layoutManager = LinearLayoutManager(context)
-        adapter = ReviewsRecycleAdapter(viewModel.reviews?.value, viewModel.users?.value)
+        adapter = FeedRecycleAdapter(viewModel.reviews?.value, viewModel.users?.value)
 
         reviewsRecyclerView?.adapter = adapter
 

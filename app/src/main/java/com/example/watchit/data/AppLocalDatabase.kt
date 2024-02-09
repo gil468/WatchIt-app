@@ -10,7 +10,7 @@ import com.example.watchit.data.user.User
 import com.example.watchit.data.user.UserDAO
 
 
-@Database(entities = [Review::class, User::class], version = 3, exportSchema = true)
+@Database(entities = [Review::class, User::class], version = 4, exportSchema = true)
 abstract class AppLocalDbRepository : RoomDatabase() {
     abstract fun reviewDao(): ReviewDAO
     abstract fun userDao(): UserDAO

@@ -16,9 +16,9 @@ data class Review(
     val userId: String,
     val description: String,
     val movieName: String,
+    var isDeleted: Boolean = false,
     var reviewImage: String? = null,
     var timestamp: Long? = null,
-    var isDeleted: Boolean? = false,
 ) : Serializable {
 
     companion object {
@@ -41,6 +41,7 @@ data class Review(
         const val LAST_UPDATED_KEY = "timestamp"
         const val DESCRIPTION_KEY = "description"
         const val MOVIE_NAME_KEY = "movieName"
+        const val IS_DELETED_KEY = "is_deleted"
         const val REVIEW_LAST_UPDATED = "review_last_updated"
 
         fun fromJSON(json: Map<String, Any>): Review {
@@ -48,8 +49,9 @@ data class Review(
             val score = json[SCORE_KEY] as? Double ?: 0.0
             val description = json[DESCRIPTION_KEY] as? String ?: ""
             val movieName = json[MOVIE_NAME_KEY] as? String ?: ""
+            val isDeleted = json[IS_DELETED_KEY] as? Boolean ?: false
             val userId = json[USER_ID_KEY] as? String ?: ""
-            val review = Review(id, score, userId, description, movieName)
+            val review = Review(id, score, userId, description, movieName, isDeleted)
 
             val timestamp: Timestamp? = json[LAST_UPDATED_KEY] as? Timestamp
             timestamp?.let {
@@ -69,6 +71,24 @@ data class Review(
                 LAST_UPDATED_KEY to FieldValue.serverTimestamp(),
                 DESCRIPTION_KEY to description,
                 MOVIE_NAME_KEY to movieName,
+                IS_DELETED_KEY to isDeleted
+            )
+        }
+
+    val deleteJson: Map<String, Any>
+        get() {
+            return hashMapOf(
+                IS_DELETED_KEY to true,
+                LAST_UPDATED_KEY to FieldValue.serverTimestamp(),
+            )
+        }
+
+    val updateJson: Map<String, Any>
+        get() {
+            return hashMapOf(
+                SCORE_KEY to score,
+                DESCRIPTION_KEY to description,
+                DESCRIPTION_KEY to FieldValue.serverTimestamp(),
             )
         }
 }

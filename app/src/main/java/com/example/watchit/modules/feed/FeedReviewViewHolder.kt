@@ -2,7 +2,6 @@ package com.example.watchit.modules.feed
 
 import android.util.Log
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +10,7 @@ import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
 import com.squareup.picasso.Picasso
 
-class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class FeedReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val reviewImageView: ImageView?
     val profileImageView: ImageView?

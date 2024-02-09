@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,14 +20,9 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
 import com.example.watchit.data.Model
-import com.example.watchit.data.review.PublishReviewDTO
 import com.example.watchit.data.review.Review
 import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
-import java.util.Date
 import java.util.UUID
 
 class NewReview : Fragment() {
@@ -38,8 +32,6 @@ class NewReview : Fragment() {
 
     private lateinit var ratingBar: EditText
     private lateinit var descriptionEditText: EditText
-    private val db = Firebase.firestore
-    private val storage = Firebase.storage
     private val auth = Firebase.auth
 
     private val imageSelectionLauncher =
@@ -81,7 +73,6 @@ class NewReview : Fragment() {
     }
 
     private fun createReview() {
-        val movieId = args.selectedMovie.id
         val movieName = args.selectedMovie.title
 
         ratingBar = root.findViewById(R.id.ratingTextNumber)
@@ -93,7 +84,7 @@ class NewReview : Fragment() {
 
             val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
             if (syntaxChecksResult) {
-                uploadReview(ratingInput.toDouble(), description, movieId, movieName)
+                uploadReview(ratingInput.toDouble(), description, movieName)
             }
         }
     }
@@ -101,46 +92,21 @@ class NewReview : Fragment() {
     private fun uploadReview(
         rating: Double,
         description: String,
-        movieId: Int,
         movieName: String
     ) {
         val reviewId = UUID.randomUUID().toString()
-        val storageRef = storage.reference
         val userId = auth.currentUser!!.uid
 
-        val imageRef = storageRef.child("images/reviews/$reviewId")
-        imageRef.putFile(selectedImageURI!!).addOnFailureListener {
-            Toast.makeText(
-                requireContext(),
-                "failed!",
-                Toast.LENGTH_SHORT
-            ).show()
-        }.addOnSuccessListener {
-            db.collection("reviews")
-                .document(reviewId)
-                .set(
-                    PublishReviewDTO(
-                        movieName,
-                        rating,
-                        userId,
-                        description,
-                        Timestamp(Date()),
-                        movieId
-                    )
-                )
+        val review = Review(
+            reviewId,
+            rating,
+            userId,
+            description,
+            movieName
+        )
 
-            val review = Review(
-                reviewId,
-                rating,
-                userId,
-                description,
-                movieName,
-                "asd"
-            )
-
-            Model.instance.addReview(review) {
-                Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
-            }
+        Model.instance.addReview(review, selectedImageURI!!) {
+            Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
         }
     }
 

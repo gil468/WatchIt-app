@@ -6,16 +6,11 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.watchit.R
-import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import com.squareup.picasso.Picasso
 
 class MyReviewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,7 +37,12 @@ class MyReviewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     @SuppressLint("SetTextI18n")
-    fun bind(review: Review?, reviewer: User?) {
+    fun bind(
+        review: Review?,
+        reviewer: User?,
+        editReviewClickListener: () -> Unit,
+        deleteReviewClickListener: () -> Unit
+    ) {
         Log.d("TAG", "review ${review?.score}")
         Picasso.get()
             .load(review?.reviewImage)
@@ -55,26 +55,19 @@ class MyReviewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         movieName?.text = review?.movieName
         reviewDescription?.text = review?.description
         reviewRating?.text = "Rating: ${review?.score} ★"
-        deleteButton.setOnClickListener{
+        deleteButton.setOnClickListener {
             MaterialAlertDialogBuilder(itemView.context)
                 .setTitle("Delete Review")
                 .setMessage("Do you want to delete this Review?")
-                .setNeutralButton("Cancel") { dialog, which ->
+                .setNeutralButton("Cancel") { _, _ ->
                 }
-                .setPositiveButton("Delete") { dialog, which ->
-                    Model.instance.deleteReview(review) {
-                        Toast.makeText(
-                            itemView.context,
-                            "Review deleted!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                .setPositiveButton("Delete") { _, _ ->
+                    deleteReviewClickListener()
                 }
                 .show()
         }
-        editButton.setOnClickListener{
-            val action = MyReviewsDirections.actionMyReviewsToEditReview(review!!)
-            Navigation.findNavController(itemView).navigate(action)
+        editButton.setOnClickListener {
+            editReviewClickListener()
         }
     }
 }
