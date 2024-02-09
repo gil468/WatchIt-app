@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.example.watchit.WatchItApplication
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
+import java.io.Serializable
 
 @Entity
 data class Review(
@@ -17,7 +18,8 @@ data class Review(
     val movieName: String,
     var reviewImage: String? = null,
     var timestamp: Long? = null,
-) {
+    var isDeleted: Boolean? = false,
+) : Serializable {
 
     companion object {
         var lastUpdated: Long

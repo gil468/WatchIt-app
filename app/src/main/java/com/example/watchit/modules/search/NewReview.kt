@@ -62,7 +62,6 @@ class NewReview : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                Log.d("Gil", "Error: ${e.message}")
                 Toast.makeText(requireContext(), "Error processing result", Toast.LENGTH_SHORT)
                     .show()
             }
@@ -75,13 +74,13 @@ class NewReview : Fragment() {
     ): View {
         root = inflater.inflate(R.layout.fragment_new_review, container, false)
 
-        defineImageSelectionCallBack(root)
-        createReview(root)
+        defineImageSelectionCallBack()
+        createReview()
 
         return root
     }
 
-    private fun createReview(root: View) {
+    private fun createReview() {
         val movieId = args.selectedMovie.id
         val movieName = args.selectedMovie.title
 
@@ -111,7 +110,6 @@ class NewReview : Fragment() {
 
         val imageRef = storageRef.child("images/reviews/$reviewId")
         imageRef.putFile(selectedImageURI!!).addOnFailureListener {
-            Log.d("Gil", "Error: ${it.message}")
             Toast.makeText(
                 requireContext(),
                 "failed!",
@@ -179,7 +177,7 @@ class NewReview : Fragment() {
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
-    private fun defineImageSelectionCallBack(root: View) {
+    private fun defineImageSelectionCallBack() {
         root.findViewById<Button>(R.id.btnPickImage).setOnClickListener {
             val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
             imageSelectionLauncher.launch(intent)

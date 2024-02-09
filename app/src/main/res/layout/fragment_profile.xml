@@ -40,10 +40,10 @@
         android:background="@drawable/userprofilebutton"
         android:text="My Reviews"
         android:textAlignment="viewStart"
-        android:textColor="#000000"
+        android:textColor="#FFFF7B00"
         android:textSize="20sp"
         android:textAllCaps="false"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24" />
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24_orange" />
 
     <Space
         android:layout_width="match_parent"
@@ -56,10 +56,10 @@
         android:background="@drawable/userprofilebutton"
         android:text="Edit My Profile"
         android:textAlignment="viewStart"
-        android:textColor="#000000"
+        android:textColor="#FFFF7B00"
         android:textSize="20sp"
         android:textAllCaps="false"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24" />
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24_orange" />
 
     <Space
         android:layout_width="match_parent"
@@ -72,9 +72,9 @@
         android:background="@drawable/userprofilebutton"
         android:text="Logout"
         android:textAlignment="viewStart"
-        android:textColor="#000000"
+        android:textColor="#FFFF7B00"
         android:textSize="20sp"
         android:textAllCaps="false"
-        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24" />
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24_orange" />
 
 </LinearLayout>

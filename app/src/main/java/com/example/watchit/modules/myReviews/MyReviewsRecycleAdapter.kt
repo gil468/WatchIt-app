@@ -7,22 +7,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.watchit.R
 import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
-import com.example.watchit.modules.feed.ReviewViewHolder
 
 class MyReviewsRecycleAdapter(var reviews: MutableList<Review>?, var user: User?) :
-    RecyclerView.Adapter<ReviewViewHolder>() {
+    RecyclerView.Adapter<MyReviewsViewHolder>() {
 
     override fun getItemCount(): Int {
         return reviews?.size ?: 0
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyReviewsViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.reviews_feed_card, parent, false)
-        return ReviewViewHolder(itemView)
+            .inflate(R.layout.fragment_my_reviews_card, parent, false)
+        return MyReviewsViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyReviewsViewHolder, position: Int) {
         val review = reviews?.get(position)
         Log.d("TAG", "reviews size ${reviews?.size}")
         holder.bind(review, user)

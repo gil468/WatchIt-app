@@ -79,19 +79,22 @@ class Model private constructor() {
         firebaseModel.getAllReviews(lastUpdated) { list ->
             var time = lastUpdated
             for (review in list) {
-                firebaseModel.getImage("reviews", review.id) { uri ->
-                    reviewsExecutor.execute {
-                        review.reviewImage = uri.toString()
-                        database.reviewDao().insert(review)
+                if (review.isDeleted == true) {
+                    database.reviewDao().delete(review)
+                } else {
+                    firebaseModel.getImage("reviews", review.id) { uri ->
+                        reviewsExecutor.execute {
+                            review.reviewImage = uri.toString()
+                            database.reviewDao().insert(review)
+                        }
                     }
-                }
 
-                review.timestamp?.let {
-                    if (time < it)
-                        time = review.timestamp ?: System.currentTimeMillis()
+                    review.timestamp?.let {
+                        if (time < it)
+                            time = review.timestamp ?: System.currentTimeMillis()
+                    }
+                    Review.lastUpdated = time
                 }
-
-                Review.lastUpdated = time
             }
             reviewsListLoadingState.postValue(LoadingState.LOADED)
         }
@@ -99,6 +102,20 @@ class Model private constructor() {
 
     fun addReview(review: Review, callback: () -> Unit) {
         firebaseModel.addReview(review) {
+            refreshAllReviews()
+            callback()
+        }
+    }
+
+    fun deleteReview(review: Review?, callback: () -> Unit) {
+        firebaseModel.deleteReview(review) {
+            refreshAllReviews()
+            callback()
+        }
+    }
+
+    fun updateReview(review: Review?, callback: () -> Unit) {
+        firebaseModel.updateReview(review) {
             refreshAllReviews()
             callback()
         }

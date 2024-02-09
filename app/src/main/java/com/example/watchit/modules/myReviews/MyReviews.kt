@@ -14,7 +14,6 @@ import com.example.watchit.databinding.FragmentFeedBinding
 class MyReviews : Fragment() {
     private var reviewsRecyclerView: RecyclerView? = null
     private var adapter: MyReviewsRecycleAdapter? = null
-
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
 
@@ -61,8 +60,6 @@ class MyReviews : Fragment() {
 
         return view
     }
-
-
     override fun onResume() {
         super.onResume()
         reloadData()
@@ -72,8 +69,6 @@ class MyReviews : Fragment() {
         Model.instance.refreshAllUsers()
         Model.instance.refreshAllReviews()
     }
-
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

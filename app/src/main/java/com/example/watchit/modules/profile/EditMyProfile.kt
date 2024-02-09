@@ -1,5 +1,6 @@
 package com.example.watchit.modules.profile
 
+import EditMyProfileViewModel
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -17,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.R
@@ -48,6 +50,8 @@ class EditMyProfile : Fragment() {
     private val storage = Firebase.storage
     private val auth = Firebase.auth
 
+    private lateinit var viewModel: EditMyProfileViewModel
+
     private val imageSelectionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             try {
@@ -74,7 +78,24 @@ class EditMyProfile : Fragment() {
         lastNameEditText = root.findViewById(R.id.editTextLastName)
         profileImageView = root.findViewById(R.id.ProfileImageView)
 
-        initFields(root)
+        viewModel = ViewModelProvider(this).get(EditMyProfileViewModel::class.java)
+
+        viewModel.firstName.observe(viewLifecycleOwner) { firstName ->
+            // Update UI or perform actions when firstName changes
+            firstNameEditText.setText(firstName)
+        }
+
+        viewModel.lastName.observe(viewLifecycleOwner) { lastName ->
+            // Update UI or perform actions when lastName changes
+            lastNameEditText.setText(lastName)
+        }
+
+        viewModel.profileImageUri.observe(viewLifecycleOwner) { uri ->
+            // Update UI or perform actions when profileImageUri changes
+            Picasso.get().load(uri).into(profileImageView)
+        }
+
+        initFields()
 
         root.findViewById<Button>(R.id.UpdateButton).setOnClickListener {
             if (validateUserUpdate()) {
@@ -109,14 +130,16 @@ class EditMyProfile : Fragment() {
         imageSelectionLauncher.launch(intent)
     }
 
-    private fun initFields(root: View) {
+    private fun initFields() {
         val currentUser = auth.currentUser!!
         db.collection("users")
             .document(currentUser.uid).get().addOnSuccessListener {
                 if (it.exists()) {
                     val user = it.toObject<PublishUserDTO>()!!
-                    firstNameEditText.setText(user.firstName)
-                    lastNameEditText.setText(user.lastName)
+//                    firstNameEditText.setText(user.firstName)
+//                    lastNameEditText.setText(user.lastName)
+                    viewModel.setFirstName(user.firstName)
+                    viewModel.setLastName(user.lastName)
 
                     firstNameEditText.addTextChangedListener { firstNameChanged = true }
                     lastNameEditText.addTextChangedListener { lastNameChanged = true }
@@ -140,8 +163,10 @@ class EditMyProfile : Fragment() {
 
         imageRef.downloadUrl.addOnSuccessListener { uri ->
             selectedImageURI = uri
-            Picasso.get().load(uri)
-                .into(root.findViewById<ImageView>(R.id.ProfileImageView))
+//            Picasso.get().load(uri)
+//                .into(root.findViewById<ImageView>(R.id.ProfileImageView))
+            viewModel.setProfileImageUri(uri)
+
         }.addOnFailureListener { exception ->
             Log.d("FirebaseStorage", "Error getting download image URI: $exception")
         }
@@ -214,6 +239,8 @@ class EditMyProfile : Fragment() {
             ).show()
             return false
         }
+        viewModel.setFirstName(firstNameEditText.text.toString().trim())
+        viewModel.setLastName(lastNameEditText.text.toString().trim())
         return true
     }
 }

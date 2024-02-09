@@ -21,19 +21,10 @@ class MovieFragment : Fragment() {
     private val args by navArgs<MovieFragmentArgs>()
     private lateinit var movie: Movie
     private lateinit var root: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         movie = args.selectedMovie
-
-//        arguments?.let {
-//            movie = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//                it.getSerializable("movie") as? Movie ?: throw IllegalArgumentException("Invalid movie type")
-//            } else {
-//                @Suppress("DEPRECATION")
-//                it.getSerializable("movie") as? Movie ?: throw IllegalArgumentException("Invalid movie type")
-//            }
-//        }
     }
 
     override fun onCreateView(

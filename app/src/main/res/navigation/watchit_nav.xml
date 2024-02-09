@@ -50,7 +50,16 @@
         android:id="@+id/myReviews"
         android:name="com.example.watchit.modules.myReviews.MyReviews"
         android:label="fragment_my_reviews"
-        tools:layout="@layout/fragment_feed" />
+        tools:layout="@layout/fragment_feed" >
+        <action
+            android:id="@+id/action_myReviews_to_editReview"
+            app:destination="@id/editReview"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <argument
+            android:name="selectedReview"
+            app:argType="com.example.watchit.data.review.Review" />
+    </fragment>
     <fragment
         android:id="@+id/movieFragment"
         android:name="com.example.watchit.modules.search.MovieFragment"
@@ -77,5 +86,16 @@
         <argument
             android:name="selectedMovie"
             app:argType="com.example.watchit.data.movie.Movie" />
+    </fragment>
+    <fragment
+        android:id="@+id/editReview"
+        android:name="com.example.watchit.modules.editReview.EditReview"
+        android:label="EditReview" >
+        <argument
+            android:name="selectedReview"
+            app:argType="com.example.watchit.data.review.Review" />
+        <action
+            android:id="@+id/action_editReview_to_myReviews"
+            app:destination="@id/myReviews" />
     </fragment>
 </navigation>

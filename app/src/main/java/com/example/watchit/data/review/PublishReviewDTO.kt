@@ -8,5 +8,6 @@ data class PublishReviewDTO(
     val userId: String? = null,
     val description: String? = null,
     val timestamp: Timestamp? = null,
-    val movieId: Int? = null
+    val movieId: Int? = null,
+    val isDeleted: Boolean = false
 )
