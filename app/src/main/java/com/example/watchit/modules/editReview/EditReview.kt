@@ -97,11 +97,9 @@ class EditReview : Fragment() {
         binding.ratingTextNumber.setText(currentReview.score.toString())
 
         binding.descriptionEditText.addTextChangedListener {
-            viewModel.descriptionChanged = true
             viewModel.description = it.toString().trim()
         }
         binding.ratingTextNumber.addTextChangedListener {
-            viewModel.ratingBarChanged = true
             viewModel.rating = it.toString().toIntOrNull()
         }
 

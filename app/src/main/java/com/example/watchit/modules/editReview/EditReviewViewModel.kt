@@ -3,17 +3,11 @@ package com.example.watchit.modules.editReview
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
 
 class EditReviewViewModel : ViewModel() {
     var imageChanged = false
-    var ratingBarChanged = false
-    var descriptionChanged = false
     var selectedImageURI: MutableLiveData<Uri> = MutableLiveData()
     var review: Review? = null
 
@@ -22,22 +16,6 @@ class EditReviewViewModel : ViewModel() {
     var descriptionError = MutableLiveData("")
     var ratingError = MutableLiveData("")
 
-    fun updateReview(
-        updatedReviewCallback: () -> Unit
-    ) {
-        if (validateReviewUpdate()) {
-            this.viewModelScope.launch {
-                val dataUpdate = async {
-                    if (ratingBarChanged || descriptionChanged) updateReviewData()
-                }
-                val imageUpdate = async { if (imageChanged) updateReviewImage() }
-                awaitAll(dataUpdate, imageUpdate)
-
-                updatedReviewCallback()
-            }
-        }
-    }
-
     fun loadReview(review: Review) {
         this.review = review
         this.description = review.description
@@ -45,6 +23,30 @@ class EditReviewViewModel : ViewModel() {
 
         Model.instance.getReviewImage(review.id) {
             selectedImageURI.postValue(it)
+        }
+    }
+
+    fun updateReview(
+        updatedReviewCallback: () -> Unit
+    ) {
+        if (validateReviewUpdate()) {
+            val updatedReview = Review(
+                review!!.id,
+                rating!!,
+                review!!.userId,
+                description!!,
+                review!!.movieName
+            )
+
+            Model.instance.updateReview(updatedReview) {
+                if (imageChanged) {
+                    Model.instance.updateReviewImage(review!!.id, selectedImageURI.value!!) {
+                        updatedReviewCallback()
+                    }
+                } else {
+                    updatedReviewCallback()
+                }
+            }
         }
     }
 
@@ -63,20 +65,5 @@ class EditReviewViewModel : ViewModel() {
             return false
         }
         return true
-    }
-
-    private fun updateReviewData() {
-        val updatedReview = Review(
-            review!!.id,
-            rating!!,
-            review!!.userId,
-            description!!,
-            review!!.movieName
-        )
-        Model.instance.updateReview(updatedReview)
-    }
-
-    private fun updateReviewImage() {
-        Model.instance.updateReviewImage(review!!.id, selectedImageURI.value!!)
     }
 }

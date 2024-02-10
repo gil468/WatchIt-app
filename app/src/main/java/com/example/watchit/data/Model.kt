@@ -119,15 +119,17 @@ class Model private constructor() {
         }
     }
 
-    fun updateReview(review: Review?) {
+    fun updateReview(review: Review?, callback: () -> Unit) {
         firebaseModel.updateReview(review) {
             refreshAllReviews()
+            callback()
         }
     }
 
-    fun updateReviewImage(reviewId: String, selectedImageUri: Uri) {
+    fun updateReviewImage(reviewId: String, selectedImageUri: Uri, callback: () -> Unit) {
         firebaseModel.addReviewImage(reviewId, selectedImageUri) {
             refreshAllReviews()
+            callback()
         }
     }
 
