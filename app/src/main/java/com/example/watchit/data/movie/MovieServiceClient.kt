@@ -1,7 +1,5 @@
-package com.example.watchit.services
+package com.example.watchit.data.movie
 
-import com.example.watchit.data.movie.Movie
-import com.example.watchit.data.movie.MovieApiResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URLEncoder

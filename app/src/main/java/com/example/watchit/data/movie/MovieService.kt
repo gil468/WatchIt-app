@@ -1,6 +1,5 @@
-package com.example.watchit.services
+package com.example.watchit.data.movie
 
-import com.example.watchit.data.movie.MovieApiResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header

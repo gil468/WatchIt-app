@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.watchit.R
-import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
+import com.example.watchit.data.review.ReviewModel
 import com.example.watchit.data.user.User
 
 class MyReviewsRecycleAdapter(var reviews: MutableList<Review>?, var user: User?) :
@@ -32,7 +32,7 @@ class MyReviewsRecycleAdapter(var reviews: MutableList<Review>?, var user: User?
             Navigation.findNavController(holder.itemView).navigate(action)
         },
             {
-                Model.instance.deleteReview(review) {
+                ReviewModel.instance.deleteReview(review) {
                     Toast.makeText(
                         holder.itemView.context,
                         "Review deleted!",

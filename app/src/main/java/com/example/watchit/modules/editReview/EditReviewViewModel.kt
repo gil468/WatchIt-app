@@ -3,8 +3,8 @@ package com.example.watchit.modules.editReview
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
+import com.example.watchit.data.review.ReviewModel
 
 class EditReviewViewModel : ViewModel() {
     var imageChanged = false
@@ -21,7 +21,7 @@ class EditReviewViewModel : ViewModel() {
         this.description = review.description
         this.rating = review.score
 
-        Model.instance.getReviewImage(review.id) {
+        ReviewModel.instance.getReviewImage(review.id) {
             selectedImageURI.postValue(it)
         }
     }
@@ -38,9 +38,9 @@ class EditReviewViewModel : ViewModel() {
                 review!!.movieName
             )
 
-            Model.instance.updateReview(updatedReview) {
+            ReviewModel.instance.updateReview(updatedReview) {
                 if (imageChanged) {
-                    Model.instance.updateReviewImage(review!!.id, selectedImageURI.value!!) {
+                    ReviewModel.instance.updateReviewImage(review!!.id, selectedImageURI.value!!) {
                         updatedReviewCallback()
                     }
                 } else {

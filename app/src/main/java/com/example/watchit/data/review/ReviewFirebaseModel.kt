@@ -1,9 +1,7 @@
-package com.example.watchit.data
+package com.example.watchit.data.review
 
 import android.net.Uri
 import android.util.Log
-import com.example.watchit.data.review.Review
-import com.example.watchit.data.user.User
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.firestore
@@ -11,14 +9,13 @@ import com.google.firebase.firestore.firestoreSettings
 import com.google.firebase.firestore.memoryCacheSettings
 import com.google.firebase.storage.storage
 
-class FirebaseModel {
+class ReviewFirebaseModel {
 
     private val db = Firebase.firestore
     private val storage = Firebase.storage
 
     companion object {
         const val REVIEWS_COLLECTION_PATH = "reviews"
-        const val USERS_COLLECTION_PATH = "users"
     }
 
     init {
@@ -48,27 +45,8 @@ class FirebaseModel {
             }
     }
 
-    fun getAllUsers(since: Long, callback: (List<User>) -> Unit) {
-        db.collection(USERS_COLLECTION_PATH)
-            .whereGreaterThanOrEqualTo(User.LAST_UPDATED_KEY, Timestamp(since, 0))
-            .get().addOnCompleteListener {
-                when (it.isSuccessful) {
-                    true -> {
-                        val reviews: MutableList<User> = mutableListOf()
-                        for (json in it.result) {
-                            val user = User.fromJSON(json.data)
-                            reviews.add(user)
-                        }
-                        callback(reviews)
-                    }
-
-                    false -> callback(listOf())
-                }
-            }
-    }
-
-    fun getImage(path: String, imageId: String, callback: (Uri) -> Unit) {
-        storage.reference.child("images/$path/$imageId")
+    fun getImage(imageId: String, callback: (Uri) -> Unit) {
+        storage.reference.child("images/$REVIEWS_COLLECTION_PATH/$imageId")
             .downloadUrl
             .addOnSuccessListener { uri ->
                 callback(uri)
@@ -82,15 +60,8 @@ class FirebaseModel {
             }
     }
 
-    fun addUserImage(userId: String, selectedImageUri: Uri, callback: () -> Unit) {
-        val imageRef = storage.reference.child("images/users/${userId}")
-        imageRef.putFile(selectedImageUri).addOnSuccessListener {
-            callback()
-        }
-    }
-
     fun addReviewImage(reviewId: String, selectedImageUri: Uri, callback: () -> Unit) {
-        val imageRef = storage.reference.child("images/reviews/${reviewId}")
+        val imageRef = storage.reference.child("images/$REVIEWS_COLLECTION_PATH/${reviewId}")
         imageRef.putFile(selectedImageUri).addOnSuccessListener {
             callback()
         }
@@ -112,23 +83,6 @@ class FirebaseModel {
                 callback()
             }.addOnFailureListener {
                 Log.d("Error", "Can't update this review document: " + it.message)
-            }
-    }
-
-    fun updateUser(user: User?, callback: () -> Unit) {
-        db.collection(USERS_COLLECTION_PATH)
-            .document(user!!.id).update(user.updateJson)
-            .addOnSuccessListener {
-                callback()
-            }.addOnFailureListener {
-                Log.d("Error", "Can't update this user document: " + it.message)
-            }
-    }
-
-    fun addUser(user: User, callback: () -> Unit) {
-        db.collection(USERS_COLLECTION_PATH).document(user.id).set(user.json)
-            .addOnSuccessListener {
-                callback()
             }
     }
 }

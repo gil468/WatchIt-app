@@ -4,8 +4,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
+import com.example.watchit.data.review.ReviewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.util.UUID
@@ -35,7 +35,7 @@ class NewReviewViewModel : ViewModel() {
                 movieName
             )
 
-            Model.instance.addReview(review, selectedImageURI.value!!) {
+            ReviewModel.instance.addReview(review, selectedImageURI.value!!) {
                 createdReviewCallback()
             }
         }
@@ -62,7 +62,7 @@ class NewReviewViewModel : ViewModel() {
             imageError.postValue("Please select an image")
             valid = false
         }
-        
+
         return valid
     }
 }

@@ -3,7 +3,7 @@ package com.example.watchit.modules.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.watchit.data.movie.Movie
-import com.example.watchit.services.MovieServiceClient
+import com.example.watchit.data.movie.MovieServiceClient
 
 class SearchViewModel : ViewModel() {
     var movies: MutableLiveData<MutableList<Movie>> = MutableLiveData()

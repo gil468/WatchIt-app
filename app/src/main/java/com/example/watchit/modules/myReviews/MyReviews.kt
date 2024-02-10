@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.watchit.data.Model
+import com.example.watchit.data.review.ReviewModel
 import com.example.watchit.databinding.FragmentFeedBinding
 
 class MyReviews : Fragment() {
@@ -49,7 +49,7 @@ class MyReviews : Fragment() {
         }
 
         viewModel.reviewsListLoadingState.observe(viewLifecycleOwner) { state ->
-            binding.pullToRefresh.isRefreshing = state == Model.LoadingState.LOADING
+            binding.pullToRefresh.isRefreshing = state == ReviewModel.LoadingState.LOADING
         }
 
         return view

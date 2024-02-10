@@ -18,8 +18,8 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.annotation.RequiresExtension
 import com.example.watchit.MainActivity
 import com.example.watchit.R
-import com.example.watchit.data.Model
 import com.example.watchit.data.user.User
+import com.example.watchit.data.user.UserModel
 import com.example.watchit.modules.login.LoginActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -88,7 +88,7 @@ class RegisterActivity : ComponentActivity() {
 
                     authenticatedUser.updateProfile(profileUpdates)
 
-                    Model.instance.addUser(
+                    UserModel.instance.addUser(
                         User(authenticatedUser.uid, firstName, lastName),
                         selectedImageURI!!
                     ) {
