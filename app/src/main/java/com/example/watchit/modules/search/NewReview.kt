@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,47 +16,49 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
 import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
+import com.example.watchit.databinding.FragmentEditReviewBinding
+import com.example.watchit.databinding.FragmentNewReviewBinding
+import com.example.watchit.modules.editReview.EditReviewViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import java.util.UUID
 
 class NewReview : Fragment() {
+    private var _binding: FragmentNewReviewBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var viewModel: NewReviewViewModel
     private val args by navArgs<MovieFragmentArgs>()
-    private var selectedImageURI: Uri? = null
-    private lateinit var root: View
-
-    private lateinit var ratingBar: EditText
-    private lateinit var descriptionEditText: EditText
-    private val auth = Firebase.auth
 
     private val imageSelectionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             try {
-                val imageUri: Uri? = result.data?.data
-                if (imageUri != null) {
-                    val imageSize = getImageSize(imageUri)
-                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
-                    if (imageSize > maxCanvasSize) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Selected image is too large",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        selectedImageURI = imageUri
-
-                        root.findViewById<ImageView>(R.id.movieImageView).setImageURI(imageUri)
-                    }
+                val imageUri: Uri = result.data?.data!!
+                val imageSize = getImageSize(imageUri)
+                val maxCanvasSize = 5 * 1024 * 1024 // 5MB
+                if (imageSize > maxCanvasSize) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Selected image is too large",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    viewModel.selectedImageURI.postValue(imageUri)
+                    binding.movieImageView.setImageURI(imageUri)
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error processing result", Toast.LENGTH_SHORT)
-                    .show()
+                Log.d("NewReview", "Error: $e")
+                Toast.makeText(
+                    requireContext(), "Error processing result", Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -64,76 +67,46 @@ class NewReview : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        root = inflater.inflate(R.layout.fragment_new_review, container, false)
+        _binding = FragmentNewReviewBinding.inflate(inflater, container, false)
+        val view = binding.root
 
-        defineImageSelectionCallBack()
-        createReview()
+        viewModel = ViewModelProvider(this)[NewReviewViewModel::class.java]
 
-        return root
+        defineUploadButtonClickListener()
+        definePickImageClickListener()
+
+        return view
     }
 
-    private fun createReview() {
-        val movieName = args.selectedMovie.title
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
+    private fun definePickImageClickListener() {
+        binding.btnPickImage.setOnClickListener {
+            defineImageSelectionCallBack()
+        }
+    }
 
-        ratingBar = root.findViewById(R.id.ratingTextNumber)
-        descriptionEditText = root.findViewById(R.id.editTextTextMultiLine)
+    private fun defineUploadButtonClickListener() {
+        binding.editTextTextMultiLine.addTextChangedListener {
+            viewModel.description = it.toString().trim()
+        }
+        binding.ratingTextNumber.addTextChangedListener {
+            viewModel.rating = it.toString().toIntOrNull()
+        }
 
-        root.findViewById<Button>(R.id.uploadButton).setOnClickListener {
-            val ratingInput = ratingBar.text.toString().trim()
-            val description = descriptionEditText.text.toString().trim()
+        viewModel.descriptionError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.editTextTextMultiLine.error = it
+        }
+        viewModel.ratingError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.ratingTextNumber.error = it
+        }
 
-            val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
-            if (syntaxChecksResult) {
-                uploadReview(ratingInput.toInt(), description, movieName)
+        binding.uploadButton.setOnClickListener {
+            viewModel.createReview(args.selectedMovie.title) {
+                findNavController().navigate(R.id.action_newReview_to_feed)
             }
         }
-    }
-
-    private fun uploadReview(
-        rating: Int,
-        description: String,
-        movieName: String
-    ) {
-        val reviewId = UUID.randomUUID().toString()
-        val userId = auth.currentUser!!.uid
-
-        val review = Review(
-            reviewId,
-            rating,
-            userId,
-            description,
-            movieName
-        )
-
-        Model.instance.addReview(review, selectedImageURI!!) {
-            Navigation.findNavController(root).navigate(R.id.action_newReview_to_feed)
-        }
-    }
-
-    private fun validateReviewSyntax(
-        description: String,
-        rating: String
-    ): Boolean {
-        if (description.isEmpty()) {
-            descriptionEditText.error = "Description cannot be empty"
-            return false
-        }
-        if (rating.isEmpty()) {
-            ratingBar.error = "Rating cannot be empty"
-            return false
-        } else if (rating.toInt() < 1 || rating.toInt() > 10) {
-            ratingBar.error = "Please rate the movie between 1-10"
-            return false
-        }
-        if (selectedImageURI == null) {
-            Toast.makeText(
-                requireContext(),
-                "You must select Review Picture",
-                Toast.LENGTH_SHORT
-            ).show()
-            return false
-        }
-        return true
     }
 
     @SuppressLint("Recycle")
@@ -144,7 +117,7 @@ class NewReview : Fragment() {
 
     @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
     private fun defineImageSelectionCallBack() {
-        root.findViewById<Button>(R.id.btnPickImage).setOnClickListener {
+        binding.btnPickImage.setOnClickListener {
             val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
             imageSelectionLauncher.launch(intent)
         }
