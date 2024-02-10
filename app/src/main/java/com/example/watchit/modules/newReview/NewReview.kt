@@ -62,20 +62,14 @@ class NewReview : Fragment() {
 
         viewModel = ViewModelProvider(this)[NewReviewViewModel::class.java]
 
+        initFields()
         defineUploadButtonClickListener()
         definePickImageClickListener()
 
         return view
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
-    private fun definePickImageClickListener() {
-        binding.btnPickImage.setOnClickListener {
-            defineImageSelectionCallBack()
-        }
-    }
-
-    private fun defineUploadButtonClickListener() {
+    private fun initFields() {
         binding.editTextTextMultiLine.addTextChangedListener {
             viewModel.description = it.toString().trim()
         }
@@ -96,10 +90,21 @@ class NewReview : Fragment() {
             if (it.isNotEmpty())
                 binding.btnPickImage.error = it
         }
+    }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
+    private fun definePickImageClickListener() {
+        binding.btnPickImage.setOnClickListener {
+            defineImageSelectionCallBack()
+        }
+    }
+
+    private fun defineUploadButtonClickListener() {
         binding.uploadButton.setOnClickListener {
+            binding.uploadButton.isClickable = false
             viewModel.createReview(args.selectedMovie.title) {
                 findNavController().navigate(R.id.action_newReview_to_feed)
+                binding.uploadButton.isClickable = true
             }
         }
     }

@@ -79,8 +79,10 @@ class EditMyProfile : Fragment() {
 
     private fun defineUpdateButtonClickListener() {
         binding.updateButton.setOnClickListener {
+            binding.updateButton.isClickable = false
             viewModel.updateUser {
                 findNavController().navigate(R.id.action_editMyProfile_to_profile)
+                binding.updateButton.isClickable = true
             }
         }
     }
