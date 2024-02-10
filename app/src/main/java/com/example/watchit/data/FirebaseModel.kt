@@ -83,6 +83,13 @@ class FirebaseModel {
 
     }
 
+    fun addUserImage(userId: String, selectedImageUri: Uri, callback: () -> Unit) {
+        val imageRef = storage.reference.child("images/users/${userId}")
+        imageRef.putFile(selectedImageUri).addOnSuccessListener {
+            callback()
+        }
+    }
+
     fun addReviewImage(reviewId: String, selectedImageUri: Uri, callback: () -> Unit) {
         val imageRef = storage.reference.child("images/reviews/${reviewId}")
         imageRef.putFile(selectedImageUri).addOnSuccessListener {
@@ -110,7 +117,7 @@ class FirebaseModel {
     }
 
     fun addUser(user: User, callback: () -> Unit) {
-        db.collection(REVIEWS_COLLECTION_PATH).document(user.id).set(user.json)
+        db.collection(USERS_COLLECTION_PATH).document(user.id).set(user.json)
             .addOnSuccessListener {
                 callback()
             }

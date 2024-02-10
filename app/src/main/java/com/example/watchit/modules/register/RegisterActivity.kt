@@ -18,15 +18,14 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.annotation.RequiresExtension
 import com.example.watchit.MainActivity
 import com.example.watchit.R
-import com.example.watchit.data.user.PublishUserDTO
+import com.example.watchit.data.Model
+import com.example.watchit.data.user.User
 import com.example.watchit.modules.login.LoginActivity
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
 
 class RegisterActivity : ComponentActivity() {
 
@@ -42,8 +41,6 @@ class RegisterActivity : ComponentActivity() {
     private lateinit var passwordEditText: TextInputEditText
     private lateinit var confirmPasswordInputLayout: TextInputLayout
     private lateinit var confirmPasswordEditText: TextInputEditText
-    private val db = Firebase.firestore
-    private val storage = Firebase.storage
     private val auth = Firebase.auth
 
     @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
@@ -82,33 +79,29 @@ class RegisterActivity : ComponentActivity() {
 
             if (syntaxChecksResult) {
                 auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-                    val user = it.user!!
+                    val authenticatedUser = it.user!!
 
                     val profileUpdates = UserProfileChangeRequest.Builder()
                         .setPhotoUri(selectedImageURI)
                         .setDisplayName("$firstName $lastName")
                         .build()
 
-                    user.updateProfile(profileUpdates)
+                    authenticatedUser.updateProfile(profileUpdates)
 
-                    val imageRef = storage.reference.child("images/users/${user.uid}")
-                    imageRef.putFile(selectedImageURI!!).addOnFailureListener {
+                    Model.instance.addUser(
+                        User(authenticatedUser.uid, firstName, lastName),
+                        selectedImageURI!!
+                    ) {
                         Toast.makeText(
                             this@RegisterActivity,
-                            "failed!",
+                            "Register Successful",
                             Toast.LENGTH_SHORT
-                        ).show()
-                    }.addOnSuccessListener {
-                        db.collection("users")
-                            .document(user.uid)
-                            .set(PublishUserDTO(firstName, lastName, email, password))
+                        )
+                            .show()
+                        val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
                     }
-
-                    Toast.makeText(this@RegisterActivity, "Register Successful", Toast.LENGTH_SHORT)
-                        .show()
-                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
                 }.addOnFailureListener {
                     Toast.makeText(
                         this@RegisterActivity,

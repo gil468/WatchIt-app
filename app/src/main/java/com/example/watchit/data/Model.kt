@@ -141,10 +141,12 @@ class Model private constructor() {
         firebaseModel.getImage("reviews", imageId, callback);
     }
 
-    fun addUser(user: User, callback: () -> Unit) {
+    fun addUser(user: User, selectedImageUri: Uri, callback: () -> Unit) {
         firebaseModel.addUser(user) {
-            refreshAllUsers()
-            callback()
+            firebaseModel.addUserImage(user.id, selectedImageUri) {
+                refreshAllUsers()
+                callback()
+            }
         }
     }
 }
