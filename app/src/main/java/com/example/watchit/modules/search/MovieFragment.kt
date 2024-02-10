@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
-import com.example.watchit.data.movie.Movie
 import com.squareup.picasso.Picasso
 
 
@@ -40,7 +39,8 @@ class MovieFragment : Fragment() {
     }
 
     private fun addAddReviewOnClickHandler() {
-        val action = MovieFragmentDirections.actionMovieFragmentToNewReview(viewModel.movieDetailsData!!)
+        val action =
+            MovieFragmentDirections.actionMovieFragmentToNewReview(viewModel.movieDetailsData!!)
         findNavController().navigate(action)
     }
 

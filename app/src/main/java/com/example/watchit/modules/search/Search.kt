@@ -10,22 +10,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.R
-import com.example.watchit.data.movie.MovieApiResponse
 import com.example.watchit.services.MovieService
 import com.squareup.picasso.Picasso
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.client.request.headers
-import io.ktor.http.HttpHeaders
-import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.runBlocking
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -82,6 +73,8 @@ class Search : Fragment() {
     }
 
     override fun onDestroy() {
+        Toast.makeText(context, "Search destroyed", Toast.LENGTH_SHORT).show()
+        findNavController().popBackStack(R.id.search, true)
         super.onDestroy()
     }
 
@@ -101,7 +94,8 @@ class Search : Fragment() {
     private suspend fun search(searchText: String) {
         val encodedSearch = URLEncoder.encode(searchText, "UTF-8")
 
-        val apiKey = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
+        val apiKey =
+            "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
 
         //        val apiResponse: MovieApiResponse =
 //            httpClient.get("https://api.themoviedb.org/3/search/movie?query=$encodedSearch") {

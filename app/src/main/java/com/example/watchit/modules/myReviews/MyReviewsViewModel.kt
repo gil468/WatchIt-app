@@ -8,7 +8,7 @@ import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
 
 class MyReviewsViewModel : ViewModel() {
-    val reviews: LiveData<MutableList<Review>> = Model.instance.getAllReviews()
+    val reviews: LiveData<MutableList<Review>> = Model.instance.getMyReviews()
     val user: LiveData<User> = Model.instance.getCurrentUser()
     val reviewsListLoadingState: MutableLiveData<Model.LoadingState> =
         Model.instance.reviewsListLoadingState
