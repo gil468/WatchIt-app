@@ -22,7 +22,6 @@ class Feed : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentFeedBinding.inflate(inflater, container, false)
         val view = binding.root
 
@@ -34,8 +33,7 @@ class Feed : Fragment() {
         adapter = FeedRecycleAdapter(viewModel.reviews.value, viewModel.users.value)
 
         reviewsRecyclerView?.adapter = adapter
-
-
+        
         viewModel.reviews.observe(viewLifecycleOwner) {
             adapter?.reviews = it
             adapter?.notifyDataSetChanged()
@@ -50,7 +48,7 @@ class Feed : Fragment() {
             viewModel.reloadData()
         }
 
-        Model.instance.reviewsListLoadingState.observe(viewLifecycleOwner) { state ->
+        viewModel.reviewsListLoadingState.observe(viewLifecycleOwner) { state ->
             binding.pullToRefresh.isRefreshing = state == Model.LoadingState.LOADING
         }
 
