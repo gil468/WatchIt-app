@@ -30,9 +30,6 @@ class Feed : Fragment() {
 
         viewModel = ViewModelProvider(this)[FeedViewModel::class.java]
 
-        viewModel.reviews = Model.instance.getAllReviews()
-        viewModel.users = Model.instance.getAllUsers()
-
         reviewsRecyclerView = binding.reviewsFeed
         reviewsRecyclerView?.setHasFixedSize(true)
         reviewsRecyclerView?.layoutManager = LinearLayoutManager(context)
@@ -52,7 +49,7 @@ class Feed : Fragment() {
         }
 
         binding.pullToRefresh.setOnRefreshListener {
-            reloadData()
+            viewModel.reloadData()
         }
 
         Model.instance.reviewsListLoadingState.observe(viewLifecycleOwner) { state ->
@@ -65,12 +62,7 @@ class Feed : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        reloadData()
-    }
-
-    private fun reloadData() {
-        Model.instance.refreshAllUsers()
-        Model.instance.refreshAllReviews()
+        viewModel.reloadData()
     }
 
 
