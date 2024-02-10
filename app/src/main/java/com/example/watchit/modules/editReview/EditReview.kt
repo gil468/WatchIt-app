@@ -47,7 +47,7 @@ class EditReview : Fragment() {
                     binding.movieImageView.setImageURI(imageUri)
                 }
             } catch (e: Exception) {
-                Log.d("EditMyReview", "Error: $e")
+                Log.d("EditReview", "Error: $e")
                 Toast.makeText(
                     requireContext(), "Error processing result", Toast.LENGTH_SHORT
                 ).show()
