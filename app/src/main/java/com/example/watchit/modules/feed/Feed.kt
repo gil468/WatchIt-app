@@ -12,12 +12,10 @@ import com.example.watchit.data.Model
 import com.example.watchit.databinding.FragmentFeedBinding
 
 class Feed : Fragment() {
-    var reviewsRecyclerView: RecyclerView? = null
-    var adapter: FeedRecycleAdapter? = null
-
+    private var reviewsRecyclerView: RecyclerView? = null
+    private var adapter: FeedRecycleAdapter? = null
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var viewModel: FeedViewModel
 
     override fun onCreateView(
@@ -33,17 +31,17 @@ class Feed : Fragment() {
         reviewsRecyclerView = binding.reviewsFeed
         reviewsRecyclerView?.setHasFixedSize(true)
         reviewsRecyclerView?.layoutManager = LinearLayoutManager(context)
-        adapter = FeedRecycleAdapter(viewModel.reviews?.value, viewModel.users?.value)
+        adapter = FeedRecycleAdapter(viewModel.reviews.value, viewModel.users.value)
 
         reviewsRecyclerView?.adapter = adapter
 
 
-        viewModel.reviews?.observe(viewLifecycleOwner) {
+        viewModel.reviews.observe(viewLifecycleOwner) {
             adapter?.reviews = it
             adapter?.notifyDataSetChanged()
         }
 
-        viewModel.users?.observe(viewLifecycleOwner) {
+        viewModel.users.observe(viewLifecycleOwner) {
             adapter?.users = it
             adapter?.notifyDataSetChanged()
         }

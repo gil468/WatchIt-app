@@ -7,8 +7,8 @@ import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
 
 class FeedViewModel : ViewModel() {
-    var reviews: LiveData<MutableList<Review>>? = Model.instance.getAllReviews()
-    var users: LiveData<MutableList<User>>? = Model.instance.getAllUsers()
+    var reviews: LiveData<MutableList<Review>> = Model.instance.getAllReviews()
+    var users: LiveData<MutableList<User>> = Model.instance.getAllUsers()
 
     fun reloadData() {
         Model.instance.refreshAllUsers()
