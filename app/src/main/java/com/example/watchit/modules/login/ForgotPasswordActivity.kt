@@ -3,7 +3,6 @@ package com.example.watchit.modules.login
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.TextView
@@ -16,12 +15,10 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
 
 class ForgotPasswordActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private val db = Firebase.firestore
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,36 +44,23 @@ class ForgotPasswordActivity : ComponentActivity() {
                 findViewById<TextInputEditText>(R.id.editTextEmailAddress).text.toString().trim()
             val syntaxChecksResult = validateUserEmail(email)
             if (syntaxChecksResult) {
-                db.collection("users").whereEqualTo("email", email).get()
-                    .addOnSuccessListener { documents ->
-                        if (documents.isEmpty) {
-                            Toast.makeText(
-                                this@ForgotPasswordActivity,
-                                "This Email doesn't exist",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            auth.sendPasswordResetEmail(email).addOnSuccessListener {
-                                Toast.makeText(
-                                    this@ForgotPasswordActivity,
-                                    "Reset password link has been sent, Check your Email",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                val intent =
-                                    Intent(this@ForgotPasswordActivity, MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }.addOnFailureListener {
-                                Toast.makeText(
-                                    this@ForgotPasswordActivity,
-                                    "Error: " + it.message,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    }.addOnFailureListener { exception ->
-                        Log.d("Fail", exception.message.toString())
-                    }
+                auth.sendPasswordResetEmail(email).addOnSuccessListener {
+                    Toast.makeText(
+                        this@ForgotPasswordActivity,
+                        "Reset password link has been sent, Check your Email",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    val intent =
+                        Intent(this@ForgotPasswordActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        this@ForgotPasswordActivity,
+                        "Error: " + it.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
