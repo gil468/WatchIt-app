@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.watchit.data.Model
 import com.example.watchit.data.user.User
 import com.google.firebase.Firebase
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
 
 class EditMyProfileViewModel : ViewModel() {
@@ -35,12 +36,19 @@ class EditMyProfileViewModel : ViewModel() {
             )
 
             Model.instance.updateUser(updatedUser) {
-                if (imageChanged) {
-                    Model.instance.updateUserImage(userId, selectedImageURI.value!!) {
+                val profileUpdates = UserProfileChangeRequest.Builder()
+                    .setPhotoUri(selectedImageURI.value!!)
+                    .setDisplayName("$firstName $lastName")
+                    .build()
+
+                Firebase.auth.currentUser!!.updateProfile(profileUpdates).addOnSuccessListener {
+                    if (imageChanged) {
+                        Model.instance.updateUserImage(userId, selectedImageURI.value!!) {
+                            updatedUserCallback()
+                        }
+                    } else {
                         updatedUserCallback()
                     }
-                } else {
-                    updatedUserCallback()
                 }
             }
         }
