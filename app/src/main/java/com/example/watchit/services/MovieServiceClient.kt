@@ -39,7 +39,7 @@ class MovieServiceClient private constructor() {
                     val moviesList = response.body()?.results
                         ?.filter { movie -> movie.popularity > 30 }
                         ?.sortedByDescending { movie -> movie.popularity }
-                    callback(moviesList as MutableList<Movie>)
+                    callback(moviesList as? MutableList<Movie> ?: mutableListOf())
                 } else {
                     throw Exception("Failed to fetch movies")
                 }
