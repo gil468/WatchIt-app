@@ -1,6 +1,7 @@
 package com.example.watchit.modules.profile
 
 import EditMyProfileViewModel
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -23,6 +24,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.R
 import com.example.watchit.data.user.PublishUserDTO
+import com.example.watchit.databinding.FragmentEditMyProfileBinding
+import com.example.watchit.databinding.FragmentEditReviewBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
@@ -38,32 +41,34 @@ import kotlinx.coroutines.tasks.await
 
 class EditMyProfile : Fragment() {
 
-    private lateinit var selectedImageURI: Uri
-    private lateinit var root: View
-    private lateinit var firstNameEditText: EditText
-    private lateinit var lastNameEditText: EditText
-    private lateinit var profileImageView: ImageView
-    private var imageChanged = false
-    private var firstNameChanged = false
-    private var lastNameChanged = false
-    private val db = Firebase.firestore
-    private val storage = Firebase.storage
-    private val auth = Firebase.auth
-
+    private var _binding: FragmentEditMyProfileBinding? = null
+    private val binding get() = _binding!!
     private lateinit var viewModel: EditMyProfileViewModel
 
     private val imageSelectionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            try {
-                val imageUri: Uri = result.data?.data!!
-                selectedImageURI = imageUri
-                imageChanged = true
-                profileImageView.setImageURI(imageUri)
-            } catch (e: Exception) {
-                Log.d("EditMyProfile", "Error: $e")
-                Toast.makeText(
-                    requireContext(), "Error processing result", Toast.LENGTH_SHORT
-                ).show()
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                try {
+                    val imageUri: Uri = result.data?.data!!
+                    val imageSize = getImageSize(imageUri)
+                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
+                    if (imageSize > maxCanvasSize) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Selected image is too large",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        viewModel.selectedImageURI.postValue(imageUri)
+                        viewModel.imageChanged = true
+                        binding.ProfileImageView.setImageURI(imageUri)
+                    }
+                } catch (e: Exception) {
+                    Log.d("EditMyReview", "Error: $e")
+                    Toast.makeText(
+                        requireContext(), "Error processing result", Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
 
@@ -72,175 +77,70 @@ class EditMyProfile : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        root = inflater.inflate(R.layout.fragment_edit_my_profile, container, false)
+        _binding = FragmentEditMyProfileBinding.inflate(inflater, container, false)
+        val view = binding.root
 
-        firstNameEditText = root.findViewById(R.id.editTextFirstName)
-        lastNameEditText = root.findViewById(R.id.editTextLastName)
-        profileImageView = root.findViewById(R.id.ProfileImageView)
-
-        viewModel = ViewModelProvider(this).get(EditMyProfileViewModel::class.java)
-
-        viewModel.firstName.observe(viewLifecycleOwner) { firstName ->
-            // Update UI or perform actions when firstName changes
-            firstNameEditText.setText(firstName)
-        }
-
-        viewModel.lastName.observe(viewLifecycleOwner) { lastName ->
-            // Update UI or perform actions when lastName changes
-            lastNameEditText.setText(lastName)
-        }
-
-        viewModel.profileImageUri.observe(viewLifecycleOwner) { uri ->
-            // Update UI or perform actions when profileImageUri changes
-            Picasso.get().load(uri).into(profileImageView)
-        }
+        viewModel = ViewModelProvider(this)[EditMyProfileViewModel::class.java]
 
         initFields()
+        defineUpdateButtonClickListener()
+        definePickImageClickListener()
 
-        root.findViewById<Button>(R.id.UpdateButton).setOnClickListener {
-            if (validateUserUpdate()) {
-                lifecycleScope.launch {
-                    val changes = listOf(
-                        async { if (firstNameChanged || lastNameChanged) updateUser() },
-                        async { if (imageChanged) updateUserImage() }
-                    )
-
-                    changes.awaitAll()
-                }.invokeOnCompletion {
-                    findNavController().navigate(R.id.action_editMyProfile_to_profile)
-                }
-
-            } else {
-                Toast.makeText(
-                    requireContext(), "invalid details", Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        root.findViewById<Button>(R.id.btnPickImage).setOnClickListener {
-            imagePickLogic()
-        }
-
-        return root
+        return view
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
-    private fun imagePickLogic() {
-        val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
-        imageSelectionLauncher.launch(intent)
+    private fun definePickImageClickListener() {
+        binding.btnPickImage.setOnClickListener {
+            defineImageSelectionCallBack()
+        }
     }
 
-    private fun initFields() {
-        val currentUser = auth.currentUser!!
-        db.collection("users")
-            .document(currentUser.uid).get().addOnSuccessListener {
-                if (it.exists()) {
-                    val user = it.toObject<PublishUserDTO>()!!
-//                    firstNameEditText.setText(user.firstName)
-//                    lastNameEditText.setText(user.lastName)
-                    viewModel.setFirstName(user.firstName)
-                    viewModel.setLastName(user.lastName)
-
-                    firstNameEditText.addTextChangedListener { firstNameChanged = true }
-                    lastNameEditText.addTextChangedListener { lastNameChanged = true }
-
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "User document isn't exist",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }.addOnFailureListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Can't get user document: " + it.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+    private fun defineUpdateButtonClickListener() {
+        binding.updateButton.setOnClickListener {
+            viewModel.updateUser {
+                findNavController().navigate(R.id.action_editMyProfile_to_profile)
             }
+        }
+    }
+    private fun initFields() {
+        viewModel.loadUser()
 
-        val imageRef = storage.reference.child("images/users/${currentUser.uid}")
+        binding.editTextFirstName.setText(viewModel.firstName)
+        binding.editTextLastName.setText(viewModel.lastName)
 
-        imageRef.downloadUrl.addOnSuccessListener { uri ->
-            selectedImageURI = uri
-//            Picasso.get().load(uri)
-//                .into(root.findViewById<ImageView>(R.id.ProfileImageView))
-            viewModel.setProfileImageUri(uri)
+        binding.editTextFirstName.addTextChangedListener {
+            viewModel.firstName = it.toString().trim()
+        }
+        binding.editTextLastName.addTextChangedListener {
+            viewModel.lastName = it.toString().trim()
+        }
 
-        }.addOnFailureListener { exception ->
-            Log.d("FirebaseStorage", "Error getting download image URI: $exception")
+        viewModel.selectedImageURI.observe(viewLifecycleOwner) { uri ->
+            Picasso.get().load(uri).into(binding.ProfileImageView)
+        }
+
+        viewModel.firstNameError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.editTextFirstName.error = it
+        }
+        viewModel.lastNameError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.editTextLastName.error = it
         }
     }
 
-    private suspend fun updateUser() {
-        val firstName = firstNameEditText.text.toString().trim()
-        val lastName = lastNameEditText.text.toString().trim()
-
-        val currentUser = auth.currentUser!!
-
-        val profileUpdates = UserProfileChangeRequest.Builder()
-            .setDisplayName("$firstName $lastName")
-            .setPhotoUri(selectedImageURI)
-            .build()
-        currentUser.updateProfile(profileUpdates)
-
-
-        try {
-            db.collection("users")
-                .document(currentUser.uid)
-                .update(
-                    mapOf(
-                        "firstName" to firstName,
-                        "lastName" to lastName,
-                    )
-                ).await()
-            Toast.makeText(requireContext(), "Update Successful", Toast.LENGTH_SHORT)
-                .show()
-        } catch (e: Exception) {
-            Log.d("UpdateUserInfo", "Error: ${e.message}")
-        }
+    @SuppressLint("Recycle")
+    private fun getImageSize(uri: Uri?): Long {
+        val inputStream = requireContext().contentResolver.openInputStream(uri!!)
+        return inputStream?.available()?.toLong() ?: 0
     }
 
-    private suspend fun updateUserImage() {
-        val currentUser = auth.currentUser!!
-        val imageRef = storage.reference.child("images/users/${currentUser.uid}")
-        try {
-
-            val uploadTask: UploadTask = imageRef.putFile(selectedImageURI)
-            uploadTask.await()
-
-            Toast.makeText(requireContext(), "Upload Image Successful", Toast.LENGTH_SHORT)
-                .show()
-        } catch (e: Exception) {
-            Log.d("UserImageUpdate", "Error: ${e.message}\n trace: ${e.stackTrace}")
-            Toast.makeText(requireContext(), "Profile image update failed!", Toast.LENGTH_SHORT)
-                .show()
+    @RequiresExtension(extension = Build.VERSION_CODES.R, version = 2)
+    private fun defineImageSelectionCallBack() {
+        binding.btnPickImage.setOnClickListener {
+            val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
+            imageSelectionLauncher.launch(intent)
         }
-    }
-
-    private fun validateUserUpdate(
-    ): Boolean {
-        val firstName = firstNameEditText.text.toString().trim()
-        val lastName = lastNameEditText.text.toString().trim()
-
-        if (firstName.isEmpty()) {
-            firstNameEditText.error = "First name cannot be empty"
-            return false
-        }
-        if (lastName.isEmpty()) {
-            lastNameEditText.error = "Last name cannot be empty"
-            return false
-        }
-        if (!this::selectedImageURI.isInitialized) {
-            Toast.makeText(
-                requireContext(),
-                "You must select Profile Image",
-                Toast.LENGTH_SHORT
-            ).show()
-            return false
-        }
-        viewModel.setFirstName(firstNameEditText.text.toString().trim())
-        viewModel.setLastName(lastNameEditText.text.toString().trim())
-        return true
     }
 }

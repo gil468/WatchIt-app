@@ -1,31 +1,65 @@
 import android.net.Uri
+import android.util.Log
+import android.widget.EditText
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.watchit.data.Model
+import com.example.watchit.data.review.Review
+import com.example.watchit.data.user.User
 
 class EditMyProfileViewModel : ViewModel() {
-    private val _firstName = MutableLiveData<String>()
-    val firstName: LiveData<String> get() = _firstName
+    var imageChanged = false
+    var selectedImageURI: MutableLiveData<Uri> = MutableLiveData()
+    var user: LiveData<User>? = null
 
-    private val _lastName = MutableLiveData<String>()
-    val lastName: LiveData<String> get() = _lastName
+    var firstName: String? = null
+    var lastName: String? = null
+    var firstNameError = MutableLiveData("")
+    var lastNameError = MutableLiveData("")
 
-    private val _profileImageUri = MutableLiveData<Uri>()
-    val profileImageUri: LiveData<Uri> get() = _profileImageUri
+    fun loadUser() {
+        this.user = Model.instance.getCurrentUser()
+        this.firstName = user!!.value!!.firstName
+        this.lastName = user!!.value!!.lastName
 
-    init {
-        // Initialize your LiveData objects if needed
+        Model.instance.getUserImage(user!!.value!!.id) {
+            selectedImageURI.postValue(it)
+        }
     }
 
-    fun setFirstName(firstName: String) {
-        _firstName.value = firstName
+    fun updateUser(
+        updatedUserCallback: () -> Unit
+    ) {
+        if (validateUserUpdate()) {
+            val updatedUser = User(
+                user!!.value!!.id,
+                firstName!!,
+                lastName!!)
+
+            Model.instance.updateUser(updatedUser) {
+                if (imageChanged) {
+                    Model.instance.updateUserImage(user!!.value!!.id, selectedImageURI.value!!) {
+                        updatedUserCallback()
+                    }
+                } else {
+                    updatedUserCallback()
+                }
+            }
+        }
     }
 
-    fun setLastName(lastName: String) {
-        _lastName.value = lastName
-    }
-
-    fun setProfileImageUri(uri: Uri) {
-        _profileImageUri.value = uri
+    private fun validateUserUpdate(
+    ): Boolean {
+        if (firstName!!.isEmpty()) {
+            firstNameError.postValue("First name cannot be empty")
+            return false
+        }
+        if (lastName!!.isEmpty()) {
+            lastNameError.postValue("Last name cannot be empty")
+            return false
+        }
+        return true
     }
 }
