@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
@@ -19,13 +20,8 @@ import com.squareup.picasso.Picasso
 class MovieFragment : Fragment() {
 
     private val args by navArgs<MovieFragmentArgs>()
-    private lateinit var movie: Movie
+    private lateinit var viewModel: MovieViewModel
     private lateinit var root: View
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        movie = args.selectedMovie
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +29,8 @@ class MovieFragment : Fragment() {
     ): View {
         root = inflater.inflate(R.layout.fragment_movie, container, false)
 
+        viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
+        viewModel.setMovieDetails(args.selectedMovie)
         loadMovieDetails(root)
         root.findViewById<Button>(R.id.addReview).setOnClickListener {
             addAddReviewOnClickHandler()
@@ -42,22 +40,24 @@ class MovieFragment : Fragment() {
     }
 
     private fun addAddReviewOnClickHandler() {
-        val action = MovieFragmentDirections.actionMovieFragmentToNewReview(movie)
+        val action = MovieFragmentDirections.actionMovieFragmentToNewReview(viewModel.movieDetailsData!!)
         findNavController().navigate(action)
     }
 
     private fun loadMovieDetails(root: View) {
         val movieTitle: TextView = root.findViewById(R.id.movieTitle)
-        movieTitle.text = movie.title
-
         val moviePoster: ImageView = root.findViewById(R.id.moviePoster)
-
-        Picasso.get()
-            .load("https://image.tmdb.org/t/p/w500${movie.backdropPath}")
-            .into(moviePoster)
-
         val movieDescription: TextView = root.findViewById(R.id.movieDescription)
-        movieDescription.text = movie.overview
-        movieDescription.movementMethod = ScrollingMovementMethod()
+
+        viewModel.movieDetailsData?.let { movie ->
+            movieTitle.text = movie.title
+
+            Picasso.get()
+                .load("https://image.tmdb.org/t/p/w500${movie.backdropPath}")
+                .into(moviePoster)
+
+            movieDescription.text = movie.overview
+            movieDescription.movementMethod = ScrollingMovementMethod()
+        }
     }
 }
