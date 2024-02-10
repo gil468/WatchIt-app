@@ -1,4 +1,4 @@
-package com.example.watchit.modules.search
+package com.example.watchit.modules.movie
 
 import androidx.lifecycle.ViewModel
 import com.example.watchit.data.movie.Movie

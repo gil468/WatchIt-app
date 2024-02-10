@@ -1,4 +1,4 @@
-package com.example.watchit.modules.search
+package com.example.watchit.modules.movie
 
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod

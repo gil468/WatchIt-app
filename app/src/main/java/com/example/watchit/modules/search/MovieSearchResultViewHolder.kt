@@ -1,6 +1,5 @@
 package com.example.watchit.modules.search
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,11 +19,9 @@ class MovieSearchResultViewHolder(itemView: View) : RecyclerView.ViewHolder(item
     }
 
     fun bind(movie: Movie?) {
-        Log.d("TAG", "binding movie")
         if (movie == null) {
             return
         }
-        Log.d("TAG", "binding movie ${movie.title}")
         itemView.setOnClickListener {
             val action = SearchDirections.actionSearchToMovieFragment(movie)
             Navigation.findNavController(itemView).navigate(action)

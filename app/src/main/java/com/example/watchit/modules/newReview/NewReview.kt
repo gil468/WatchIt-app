@@ -1,4 +1,4 @@
-package com.example.watchit.modules.search
+package com.example.watchit.modules.newReview
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -10,27 +10,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
-import com.example.watchit.data.Model
-import com.example.watchit.data.review.Review
-import com.example.watchit.databinding.FragmentEditReviewBinding
 import com.example.watchit.databinding.FragmentNewReviewBinding
-import com.example.watchit.modules.editReview.EditReviewViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import java.util.UUID
+import com.example.watchit.modules.movie.MovieFragmentArgs
 
 class NewReview : Fragment() {
     private var _binding: FragmentNewReviewBinding? = null
@@ -100,6 +90,11 @@ class NewReview : Fragment() {
         viewModel.ratingError.observe(viewLifecycleOwner) {
             if (it.isNotEmpty())
                 binding.ratingTextNumber.error = it
+        }
+
+        viewModel.imageError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.btnPickImage.error = it
         }
 
         binding.uploadButton.setOnClickListener {

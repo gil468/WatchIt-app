@@ -2,8 +2,6 @@ package com.example.watchit.services
 
 import com.example.watchit.data.movie.Movie
 import com.example.watchit.data.movie.MovieApiResponse
-import com.github.leonardoxh.livedatacalladapter.LiveDataCallAdapterFactory
-import com.github.leonardoxh.livedatacalladapter.LiveDataResponseBodyConverterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URLEncoder
@@ -17,8 +15,6 @@ class MovieServiceClient private constructor() {
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.themoviedb.org/3/")
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(LiveDataCallAdapterFactory.create())
-        .addConverterFactory(LiveDataResponseBodyConverterFactory.create())
         .build()
 
     private val apiKey =

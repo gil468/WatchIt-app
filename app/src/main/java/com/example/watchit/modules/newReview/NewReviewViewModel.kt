@@ -1,10 +1,9 @@
-package com.example.watchit.modules.search
+package com.example.watchit.modules.newReview
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.navigation.Navigation
-import com.example.watchit.R
 import com.example.watchit.data.Model
 import com.example.watchit.data.review.Review
 import com.google.firebase.Firebase
@@ -13,14 +12,15 @@ import java.util.UUID
 
 class NewReviewViewModel : ViewModel() {
     var selectedImageURI: MutableLiveData<Uri> = MutableLiveData()
-    var description: String? = null
+    var description: String = ""
     var rating: Int? = null
     var descriptionError = MutableLiveData("")
     var ratingError = MutableLiveData("")
-    val auth = Firebase.auth
+    var imageError = MutableLiveData("")
+    private val auth = Firebase.auth
 
     fun createReview(
-        movieName : String,
+        movieName: String,
         createdReviewCallback: () -> Unit
     ) {
         if (validateReviewUpdate()) {
@@ -31,7 +31,7 @@ class NewReviewViewModel : ViewModel() {
                 reviewId,
                 rating!!,
                 userId,
-                description!!,
+                description,
                 movieName
             )
 
@@ -43,18 +43,26 @@ class NewReviewViewModel : ViewModel() {
 
     private fun validateReviewUpdate(
     ): Boolean {
-        if (description != null && description!!.isEmpty()) {
+        var valid = true
+
+        if (description.isEmpty()) {
             descriptionError.postValue("Description cannot be empty")
-            return false
+            valid = false
         }
+        Log.d("NewReviewViewModel", "Rating: $rating")
         if (rating == null) {
             ratingError.postValue("Rating cannot be empty")
-            return false
-        }
-        if (rating!! < 1 || rating!! > 10) {
+            valid = false
+        } else if (rating!! < 1 || rating!! > 10) {
             ratingError.postValue("Please rate the movie between 1-10")
-            return false
+            valid = false
         }
-        return true
+
+        if (selectedImageURI.value == null) {
+            imageError.postValue("Please select an image")
+            valid = false
+        }
+        
+        return valid
     }
 }
