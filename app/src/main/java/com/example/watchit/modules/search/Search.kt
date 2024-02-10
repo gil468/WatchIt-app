@@ -2,123 +2,66 @@ package com.example.watchit.modules.search
 
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.SearchView
-import android.widget.TextView
-import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.watchit.R
-import com.example.watchit.services.MovieService
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.runBlocking
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.net.URLEncoder
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.watchit.databinding.FragmentSearchBinding
 
 class Search : Fragment() {
-    private lateinit var root: View
-    private lateinit var searchView: SearchView
-    private lateinit var mainLayout: LinearLayout
-    private lateinit var pleaseSearchView: TextView
-    private lateinit var searchResults: LinearLayout
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/3/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val movieService = retrofit.create(MovieService::class.java)
+    private var searchRecyclerView: RecyclerView? = null
+    private var adapter: SearchRecycleAdapter? = null
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
+    private lateinit var viewModel: SearchViewModel
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        root = inflater.inflate(R.layout.fragment_search, container, false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        val view = binding.root
 
+        viewModel = ViewModelProvider(this)[SearchViewModel::class.java]
 
-        mainLayout = root.findViewById(R.id.linearLayout)
-        searchView = root.findViewById(R.id.searchView)
-        pleaseSearchView = root.findViewById(R.id.SearchTextView)
-        searchResults = root.findViewById(R.id.searchResultsLayout)
+        searchRecyclerView = binding.searchResultsLayout
+        searchRecyclerView?.setHasFixedSize(true)
+        searchRecyclerView?.layoutManager = LinearLayoutManager(context)
+        adapter = SearchRecycleAdapter(viewModel.movies.value)
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchRecyclerView?.adapter = adapter
+
+        viewModel.movies.observe(viewLifecycleOwner) {
+            Log.d("TAG", "movies size ${it?.size}")
+            adapter?.movies = it
+            adapter?.notifyDataSetChanged()
+        }
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                searchResults.removeAllViews()
-                runBlocking { search(query) }
-                pleaseSearchView.visibility = View.GONE
+                viewModel.clearMovies()
+                viewModel.refreshMovies(query)
+
+                binding.SearchTextView.visibility = View.GONE
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                if (searchResults.isNotEmpty())
-                    pleaseSearchView.visibility = View.GONE
+                if (viewModel.movies.value?.isNotEmpty() == true)
+                    binding.SearchTextView.visibility = View.GONE
                 else
-                    pleaseSearchView.visibility = View.VISIBLE
+                    binding.SearchTextView.visibility = View.VISIBLE
 
                 return false
             }
         })
 
-        return root
+        return view
     }
 
-    private suspend fun search(searchText: String) {
-        val encodedSearch = URLEncoder.encode(searchText, "UTF-8")
-
-        val apiKey =
-            "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
-
-        try {
-            val apiResponse = movieService.searchMovies(encodedSearch, "Bearer $apiKey")
-            apiResponse.results
-                .filter { movie -> movie.popularity > 30 }
-                .sortedByDescending { movie -> movie.popularity }
-                .forEach { movie ->
-                    val layout = LinearLayout(requireContext())
-                    val imageView = ImageView(requireContext())
-
-                    Picasso.get()
-                        .load("https://image.tmdb.org/t/p/w500${movie.posterPath}")
-                        .into(imageView)
-
-                    val layoutParams = LinearLayout.LayoutParams(200, 200)
-                    layoutParams.topMargin = 15
-
-                    imageView.layoutParams = layoutParams
-
-                    val title = TextView(requireContext())
-                    val params = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        weight = 1.0f
-                        gravity = Gravity.CENTER
-                    }
-                    title.textSize = 20f
-                    title.text = movie.title
-                    title.layoutParams = params
-
-                    layout.addView(imageView)
-                    layout.addView(title)
-
-                    layout.setOnClickListener {
-
-                        val action = SearchDirections.actionSearchToMovieFragment(movie)
-                        findNavController().navigate(action)
-                    }
-                    Log.d("Gil", apiResponse.toString())
-
-                    searchResults.addView(layout)
-                }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 }
