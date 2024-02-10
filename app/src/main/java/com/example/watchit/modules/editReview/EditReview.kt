@@ -65,7 +65,6 @@ class EditReview : Fragment() {
         viewModel = ViewModelProvider(this)[EditReviewViewModel::class.java]
 
         initFields()
-
         defineUpdateButtonClickListener()
         definePickImageClickListener()
 
@@ -89,8 +88,6 @@ class EditReview : Fragment() {
 
     private fun initFields() {
         val currentReview = args.selectedReview
-        viewModel.review = args.selectedReview
-
         viewModel.loadReview(currentReview)
 
         binding.descriptionEditText.setText(currentReview.description)
