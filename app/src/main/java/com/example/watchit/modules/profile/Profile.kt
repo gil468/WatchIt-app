@@ -34,7 +34,6 @@ class Profile : Fragment() {
         setUserNameTextView()
         setProfileImage()
         root.findViewById<Button>(R.id.MyReviewsButton).setOnClickListener {
-//            navigateToFragment(MyReviews())
             Navigation.findNavController(root).navigate(R.id.action_profile_to_myReviews)
         }
         root.findViewById<Button>(R.id.EditMyProfileButton).setOnClickListener {
@@ -45,14 +44,6 @@ class Profile : Fragment() {
         }
         return root
     }
-
-
-//    private fun navigateToFragment(destFragment: Fragment) {
-//        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-//        transaction.replace(R.id.FragmentLayout, destFragment)
-//        transaction.addToBackStack(null)
-//        transaction.commit()
-//    }
 
     private fun setProfileImage() {
         val imageRef = storage.reference.child("images/users/${auth.currentUser?.uid}")

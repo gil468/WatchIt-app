@@ -1,6 +1,7 @@
 package com.example.watchit.modules.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,11 @@ import android.widget.SearchView
 import android.widget.TextView
 import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.R
 import com.example.watchit.data.movie.MovieApiResponse
+import com.example.watchit.services.MovieService
 import com.squareup.picasso.Picasso
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -24,6 +27,8 @@ import io.ktor.client.request.headers
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.runBlocking
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.net.URLEncoder
 
 class Search : Fragment() {
@@ -32,7 +37,15 @@ class Search : Fragment() {
     private lateinit var mainLayout: LinearLayout
     private lateinit var pleaseSearchView: TextView
     private lateinit var searchResults: LinearLayout
-    private lateinit var httpClient: HttpClient
+//    private lateinit var httpClient: HttpClient
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://api.themoviedb.org/3/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val movieService = retrofit.create(MovieService::class.java)
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +53,7 @@ class Search : Fragment() {
     ): View {
         root = inflater.inflate(R.layout.fragment_search, container, false)
 
-        initHttpClient()
+//        initHttpClient()
 
         mainLayout = root.findViewById(R.id.linearLayout)
         searchView = root.findViewById(R.id.searchView)
@@ -69,70 +82,82 @@ class Search : Fragment() {
     }
 
     override fun onDestroy() {
-        if (this::httpClient.isInitialized) httpClient.close()
         super.onDestroy()
     }
 
-    private fun initHttpClient() {
-        httpClient = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                gson()
-            }
-        }
-    }
+//    override fun onDestroy() {
+//        if (this::httpClient.isInitialized) httpClient.close()
+//        super.onDestroy()
+//    }
+
+//    private fun initHttpClient() {
+//        httpClient = HttpClient(CIO) {
+//            install(ContentNegotiation) {
+//                gson()
+//            }
+//        }
+//    }
 
     private suspend fun search(searchText: String) {
         val encodedSearch = URLEncoder.encode(searchText, "UTF-8")
 
-        val apiResponse: MovieApiResponse =
-            httpClient.get("https://api.themoviedb.org/3/search/movie?query=$encodedSearch") {
-                headers {
-                    append(HttpHeaders.Accept, "application/json")
-                    append(
-                        HttpHeaders.Authorization,
-                        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
-                    )
+        val apiKey = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
+
+        //        val apiResponse: MovieApiResponse =
+//            httpClient.get("https://api.themoviedb.org/3/search/movie?query=$encodedSearch") {
+//                headers {
+//                    append(HttpHeaders.Accept, "application/json")
+//                    append(
+//                        HttpHeaders.Authorization,
+//                        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
+//                    )
+//                }
+//            }.body()
+
+        try {
+            val apiResponse = movieService.searchMovies(encodedSearch, "Bearer $apiKey")
+            apiResponse.results
+                .filter { movie -> movie.popularity > 30 }
+                .sortedByDescending { movie -> movie.popularity }
+                .forEach { movie ->
+                    val layout = LinearLayout(requireContext())
+                    val imageView = ImageView(requireContext())
+
+                    Picasso.get()
+                        .load("https://image.tmdb.org/t/p/w500${movie.posterPath}")
+                        .into(imageView)
+
+                    val layoutParams = LinearLayout.LayoutParams(200, 200)
+                    layoutParams.topMargin = 15
+
+                    imageView.layoutParams = layoutParams
+
+                    val title = TextView(requireContext())
+                    val params = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        weight = 1.0f
+                        gravity = Gravity.CENTER
+                    }
+                    title.textSize = 20f
+                    title.text = movie.title
+                    title.layoutParams = params
+
+                    layout.addView(imageView)
+                    layout.addView(title)
+
+                    layout.setOnClickListener {
+
+                        val action = SearchDirections.actionSearchToMovieFragment(movie)
+                        findNavController().navigate(action)
+                    }
+                    Log.d("Gil", apiResponse.toString())
+
+                    searchResults.addView(layout)
                 }
-            }.body()
-
-        apiResponse.results
-            .filter { movie -> movie.popularity > 30 }
-            .sortedByDescending { movie -> movie.popularity }
-            .forEach { movie ->
-                val layout = LinearLayout(requireContext())
-                val imageView = ImageView(requireContext())
-
-                Picasso.get()
-                    .load("https://image.tmdb.org/t/p/w500${movie.posterPath}")
-                    .into(imageView)
-
-                val layoutParams = LinearLayout.LayoutParams(200, 200)
-                layoutParams.topMargin = 15
-
-                imageView.layoutParams = layoutParams
-
-                val title = TextView(requireContext())
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    weight = 1.0f
-                    gravity = Gravity.CENTER
-                }
-                title.textSize = 20f
-                title.text = movie.title
-                title.layoutParams = params
-
-                layout.addView(imageView)
-                layout.addView(title)
-
-                layout.setOnClickListener {
-
-                    val action = SearchDirections.actionSearchToMovieFragment(movie)
-                    findNavController().navigate(action)
-                }
-
-                searchResults.addView(layout)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
