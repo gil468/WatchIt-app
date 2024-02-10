@@ -84,13 +84,13 @@ class NewReview : Fragment() {
 
             val syntaxChecksResult = validateReviewSyntax(description, ratingInput)
             if (syntaxChecksResult) {
-                uploadReview(ratingInput.toDouble(), description, movieName)
+                uploadReview(ratingInput.toInt(), description, movieName)
             }
         }
     }
 
     private fun uploadReview(
-        rating: Double,
+        rating: Int,
         description: String,
         movieName: String
     ) {
@@ -121,7 +121,7 @@ class NewReview : Fragment() {
         if (rating.isEmpty()) {
             ratingBar.error = "Rating cannot be empty"
             return false
-        } else if (rating.toDouble() < 1 || rating.toDouble() > 10) {
+        } else if (rating.toInt() < 1 || rating.toInt() > 10) {
             ratingBar.error = "Please rate the movie between 1-10"
             return false
         }

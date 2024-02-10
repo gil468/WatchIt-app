@@ -1,6 +1,7 @@
 package com.example.watchit.data.review
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.watchit.WatchItApplication
@@ -12,7 +13,7 @@ import java.io.Serializable
 data class Review(
     @PrimaryKey
     val id: String,
-    val score: Double,
+    val score: Int,
     val userId: String,
     val description: String,
     val movieName: String,
@@ -42,11 +43,15 @@ data class Review(
         const val DESCRIPTION_KEY = "description"
         const val MOVIE_NAME_KEY = "movieName"
         const val IS_DELETED_KEY = "is_deleted"
-        const val REVIEW_LAST_UPDATED = "review_last_updated"
+        private const val REVIEW_LAST_UPDATED = "review_last_updated"
 
         fun fromJSON(json: Map<String, Any>): Review {
+            Log.d(
+                "Review",
+                "fromJSON: $json score: ${json[SCORE_KEY]} scoreInt: ${(json[SCORE_KEY] as? Long) ?: 0}"
+            )
             val id = json[ID_KEY] as? String ?: ""
-            val score = json[SCORE_KEY] as? Double ?: 0.0
+            val score = (json[SCORE_KEY] as? Long)?.toInt() ?: 0
             val description = json[DESCRIPTION_KEY] as? String ?: ""
             val movieName = json[MOVIE_NAME_KEY] as? String ?: ""
             val isDeleted = json[IS_DELETED_KEY] as? Boolean ?: false

@@ -15,11 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.watchit.R
-import com.example.watchit.data.Model
-import com.example.watchit.data.review.Review
 import com.example.watchit.databinding.FragmentEditReviewBinding
 import com.squareup.picasso.Picasso
 
@@ -27,12 +26,7 @@ class EditReview : Fragment() {
 
     private var _binding: FragmentEditReviewBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var selectedImageURI: Uri
-    private var imageChanged = false
-    private var ratingBarChanged = false
-    private var descriptionChanged = false
-
+    private lateinit var viewModel: EditReviewViewModel
     private val args by navArgs<EditReviewArgs>()
 
     private val imageSelectionLauncher =
@@ -48,8 +42,8 @@ class EditReview : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    selectedImageURI = imageUri
-                    imageChanged = true
+                    viewModel.selectedImageURI.postValue(imageUri)
+                    viewModel.imageChanged = true
                     binding.movieImageView.setImageURI(imageUri)
                 }
             } catch (e: Exception) {
@@ -68,6 +62,8 @@ class EditReview : Fragment() {
         _binding = FragmentEditReviewBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        viewModel = ViewModelProvider(this)[EditReviewViewModel::class.java]
+
         initFields()
 
         defineUpdateButtonClickListener()
@@ -85,83 +81,48 @@ class EditReview : Fragment() {
 
     private fun defineUpdateButtonClickListener() {
         binding.updateButton.setOnClickListener {
-            if (validateReviewUpdate()) {
-                if (ratingBarChanged || descriptionChanged) updateReview()
-                if (imageChanged) updateReviewImage()
-
+            viewModel.updateReview(
+                {
+                    Toast.makeText(
+                        context, "invalid details", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            ) {
                 findNavController().navigate(R.id.action_editReview_to_myReviews)
-            } else {
-                Toast.makeText(
-                    requireContext(), "invalid details", Toast.LENGTH_SHORT
-                ).show()
             }
         }
     }
 
     private fun initFields() {
         val currentReview = args.selectedReview
+        viewModel.review = args.selectedReview
+
+        viewModel.loadReview(currentReview)
 
         binding.descriptionEditText.setText(currentReview.description)
         binding.ratingTextNumber.setText(currentReview.score.toString())
 
-        binding.descriptionEditText.addTextChangedListener { descriptionChanged = true }
-        binding.ratingTextNumber.addTextChangedListener { ratingBarChanged = true }
+        binding.descriptionEditText.addTextChangedListener {
+            viewModel.descriptionChanged = true
+            viewModel.description = it.toString().trim()
+        }
+        binding.ratingTextNumber.addTextChangedListener {
+            viewModel.ratingBarChanged = true
+            viewModel.rating = it.toString().toIntOrNull()
+        }
 
-
-        Model.instance.getReviewImage(currentReview.id) { uri ->
-            selectedImageURI = uri
+        viewModel.selectedImageURI.observe(viewLifecycleOwner) { uri ->
             Picasso.get().load(uri).into(binding.movieImageView)
         }
-    }
 
-    private fun updateReview() {
-        val description = binding.descriptionEditText.text.toString().trim()
-        val score = binding.ratingTextNumber.text.toString().trim().toDouble()
-
-        val updatedReview = Review(
-            args.selectedReview.id,
-            score,
-            args.selectedReview.userId,
-            description,
-            args.selectedReview.movieName
-        )
-
-        Model.instance.updateReview(updatedReview) {
-            Toast.makeText(
-                context,
-                "Review updated!",
-                Toast.LENGTH_SHORT
-            ).show()
+        viewModel.descriptionError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.descriptionEditText.error = it
         }
-    }
-
-    private fun updateReviewImage() {
-        val reviewId = args.selectedReview.id
-
-        Model.instance.updateReviewImage(reviewId, selectedImageURI) {
-            Toast.makeText(requireContext(), "Upload Image Successful", Toast.LENGTH_SHORT)
-                .show()
+        viewModel.ratingError.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty())
+                binding.ratingTextNumber.error = it
         }
-
-    }
-
-    private fun validateReviewUpdate(
-    ): Boolean {
-        val description = binding.descriptionEditText.text.toString().trim()
-        val rating = binding.ratingTextNumber.text.toString().trim()
-
-        if (description.isEmpty()) {
-            binding.descriptionEditText.error = "Description cannot be empty"
-            return false
-        }
-        if (rating.isEmpty()) {
-            binding.descriptionEditText.error = "Rating cannot be empty"
-            return false
-        } else if (rating.toDouble() < 1 || rating.toDouble() > 10) {
-            binding.descriptionEditText.error = "Please rate the movie between 1-10"
-            return false
-        }
-        return true
     }
 
     @SuppressLint("Recycle")

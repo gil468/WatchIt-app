@@ -28,7 +28,6 @@ class Search : Fragment() {
     private lateinit var mainLayout: LinearLayout
     private lateinit var pleaseSearchView: TextView
     private lateinit var searchResults: LinearLayout
-//    private lateinit var httpClient: HttpClient
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.themoviedb.org/3/")
@@ -44,7 +43,6 @@ class Search : Fragment() {
     ): View {
         root = inflater.inflate(R.layout.fragment_search, container, false)
 
-//        initHttpClient()
 
         mainLayout = root.findViewById(R.id.linearLayout)
         searchView = root.findViewById(R.id.searchView)
@@ -78,35 +76,11 @@ class Search : Fragment() {
         super.onDestroy()
     }
 
-//    override fun onDestroy() {
-//        if (this::httpClient.isInitialized) httpClient.close()
-//        super.onDestroy()
-//    }
-
-//    private fun initHttpClient() {
-//        httpClient = HttpClient(CIO) {
-//            install(ContentNegotiation) {
-//                gson()
-//            }
-//        }
-//    }
-
     private suspend fun search(searchText: String) {
         val encodedSearch = URLEncoder.encode(searchText, "UTF-8")
 
         val apiKey =
             "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
-
-        //        val apiResponse: MovieApiResponse =
-//            httpClient.get("https://api.themoviedb.org/3/search/movie?query=$encodedSearch") {
-//                headers {
-//                    append(HttpHeaders.Accept, "application/json")
-//                    append(
-//                        HttpHeaders.Authorization,
-//                        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlNjhiZTA1NzNhMzY2MTBjMmFhZjMzZDI2NjYxMGMwMSIsInN1YiI6IjY1OWIwM2E4N2Q1NTA0MDI2MTdhMjA4YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.94z8lgf6EOsxtgyOVyjb_I9AzU_dV5ZUicdRjR6S0EM"
-//                    )
-//                }
-//            }.body()
 
         try {
             val apiResponse = movieService.searchMovies(encodedSearch, "Bearer $apiKey")
