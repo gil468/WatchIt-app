@@ -81,13 +81,7 @@ class EditReview : Fragment() {
 
     private fun defineUpdateButtonClickListener() {
         binding.updateButton.setOnClickListener {
-            viewModel.updateReview(
-                {
-                    Toast.makeText(
-                        context, "invalid details", Toast.LENGTH_SHORT
-                    ).show()
-                }
-            ) {
+            viewModel.updateReview {
                 findNavController().navigate(R.id.action_editReview_to_myReviews)
             }
         }

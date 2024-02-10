@@ -23,7 +23,6 @@ class EditReviewViewModel : ViewModel() {
     var ratingError = MutableLiveData("")
 
     fun updateReview(
-        invalidReviewCallback: () -> Unit,
         updatedReviewCallback: () -> Unit
     ) {
         if (validateReviewUpdate()) {
@@ -32,15 +31,10 @@ class EditReviewViewModel : ViewModel() {
                     if (ratingBarChanged || descriptionChanged) updateReviewData()
                 }
                 val imageUpdate = async { if (imageChanged) updateReviewImage() }
-
                 awaitAll(dataUpdate, imageUpdate)
 
                 updatedReviewCallback()
             }
-
-
-        } else {
-            invalidReviewCallback()
         }
     }
 
@@ -79,7 +73,6 @@ class EditReviewViewModel : ViewModel() {
             description!!,
             review!!.movieName
         )
-
         Model.instance.updateReview(updatedReview)
     }
 
