@@ -80,8 +80,10 @@ class EditReview : Fragment() {
 
     private fun defineUpdateButtonClickListener() {
         binding.updateButton.setOnClickListener {
+            binding.updateButton.isClickable = false
             viewModel.updateReview {
                 findNavController().navigate(R.id.action_editReview_to_myReviews)
+                binding.updateButton.isClickable = true
             }
         }
     }
