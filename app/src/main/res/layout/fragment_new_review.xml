@@ -57,8 +57,8 @@
             android:layout_width="120dp"
             android:layout_height="50dp"
             android:hint="@string/movie_rating"
-            android:inputType="numberDecimal"
-            android:maxLength="3"
+            android:inputType="number"
+            android:maxLength="2"
             android:textAlignment="center" />
 
         <ImageView
