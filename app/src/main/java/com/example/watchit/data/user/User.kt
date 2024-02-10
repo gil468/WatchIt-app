@@ -59,4 +59,14 @@ class User(
                 LAST_UPDATED_KEY to FieldValue.serverTimestamp(),
             )
         }
+
+    val updateJson: Map<String, Any>
+        get() {
+            return hashMapOf(
+                FIRST_NAME_KEY to firstName,
+                LAST_NAME_KEY to lastName,
+                LAST_UPDATED_KEY to FieldValue.serverTimestamp(),
+            )
+        }
+
 }

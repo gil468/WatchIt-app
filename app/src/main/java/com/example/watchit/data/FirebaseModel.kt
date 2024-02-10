@@ -80,7 +80,6 @@ class FirebaseModel {
             .addOnSuccessListener {
                 callback()
             }
-
     }
 
     fun addUserImage(userId: String, selectedImageUri: Uri, callback: () -> Unit) {
@@ -108,11 +107,21 @@ class FirebaseModel {
 
     fun updateReview(review: Review?, callback: () -> Unit) {
         db.collection(REVIEWS_COLLECTION_PATH)
-            .document(review!!.id).update(review.json)
+            .document(review!!.id).update(review.updateJson)
             .addOnSuccessListener {
                 callback()
             }.addOnFailureListener {
                 Log.d("Error", "Can't update this review document: " + it.message)
+            }
+    }
+
+    fun updateUser(user: User?, callback: () -> Unit) {
+        db.collection(USERS_COLLECTION_PATH)
+            .document(user!!.id).update(user.updateJson)
+            .addOnSuccessListener {
+                callback()
+            }.addOnFailureListener {
+                Log.d("Error", "Can't update this user document: " + it.message)
             }
     }
 

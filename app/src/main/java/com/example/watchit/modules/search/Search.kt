@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SearchView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -68,12 +67,6 @@ class Search : Fragment() {
         })
 
         return root
-    }
-
-    override fun onDestroy() {
-        Toast.makeText(context, "Search destroyed", Toast.LENGTH_SHORT).show()
-        findNavController().popBackStack(R.id.search, true)
-        super.onDestroy()
     }
 
     private suspend fun search(searchText: String) {

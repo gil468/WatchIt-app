@@ -133,6 +133,20 @@ class Model private constructor() {
         }
     }
 
+    fun updateUser(user: User?, callback: () -> Unit) {
+        firebaseModel.updateUser(user) {
+            refreshAllUsers()
+            callback()
+        }
+    }
+
+    fun updateUserImage(userId: String, selectedImageUri: Uri, callback: () -> Unit) {
+        firebaseModel.addUserImage(userId, selectedImageUri) {
+            refreshAllReviews()
+            callback()
+        }
+    }
+
     fun getUserImage(imageId: String, callback: (Uri) -> Unit) {
         firebaseModel.getImage("users", imageId, callback);
     }

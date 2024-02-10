@@ -93,7 +93,7 @@ data class Review(
             return hashMapOf(
                 SCORE_KEY to score,
                 DESCRIPTION_KEY to description,
-                DESCRIPTION_KEY to FieldValue.serverTimestamp(),
+                LAST_UPDATED_KEY to FieldValue.serverTimestamp(),
             )
         }
 }
