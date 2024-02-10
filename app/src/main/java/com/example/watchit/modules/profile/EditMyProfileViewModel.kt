@@ -1,18 +1,17 @@
 import android.net.Uri
-import android.util.Log
-import android.widget.EditText
-import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.watchit.data.Model
-import com.example.watchit.data.review.Review
 import com.example.watchit.data.user.User
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class EditMyProfileViewModel : ViewModel() {
+    val userId = Firebase.auth.currentUser!!.uid
     var imageChanged = false
     var selectedImageURI: MutableLiveData<Uri> = MutableLiveData()
-    var user: LiveData<User>? = null
+    var user: LiveData<User> = Model.instance.getCurrentUser()
 
     var firstName: String? = null
     var lastName: String? = null
@@ -20,11 +19,7 @@ class EditMyProfileViewModel : ViewModel() {
     var lastNameError = MutableLiveData("")
 
     fun loadUser() {
-        this.user = Model.instance.getCurrentUser()
-        this.firstName = user!!.value!!.firstName
-        this.lastName = user!!.value!!.lastName
-
-        Model.instance.getUserImage(user!!.value!!.id) {
+        Model.instance.getUserImage(userId) {
             selectedImageURI.postValue(it)
         }
     }
@@ -34,13 +29,14 @@ class EditMyProfileViewModel : ViewModel() {
     ) {
         if (validateUserUpdate()) {
             val updatedUser = User(
-                user!!.value!!.id,
+                userId,
                 firstName!!,
-                lastName!!)
+                lastName!!
+            )
 
             Model.instance.updateUser(updatedUser) {
                 if (imageChanged) {
-                    Model.instance.updateUserImage(user!!.value!!.id, selectedImageURI.value!!) {
+                    Model.instance.updateUserImage(userId, selectedImageURI.value!!) {
                         updatedUserCallback()
                     }
                 } else {

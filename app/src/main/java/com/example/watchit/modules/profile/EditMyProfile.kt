@@ -11,33 +11,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.watchit.R
-import com.example.watchit.data.user.PublishUserDTO
 import com.example.watchit.databinding.FragmentEditMyProfileBinding
-import com.example.watchit.databinding.FragmentEditReviewBinding
-import com.google.firebase.Firebase
-import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
-import com.google.firebase.storage.UploadTask
-import com.google.firebase.storage.storage
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class EditMyProfile : Fragment() {
 
@@ -47,28 +30,26 @@ class EditMyProfile : Fragment() {
 
     private val imageSelectionLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                try {
-                    val imageUri: Uri = result.data?.data!!
-                    val imageSize = getImageSize(imageUri)
-                    val maxCanvasSize = 5 * 1024 * 1024 // 5MB
-                    if (imageSize > maxCanvasSize) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Selected image is too large",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        viewModel.selectedImageURI.postValue(imageUri)
-                        viewModel.imageChanged = true
-                        binding.ProfileImageView.setImageURI(imageUri)
-                    }
-                } catch (e: Exception) {
-                    Log.d("EditMyReview", "Error: $e")
+            try {
+                val imageUri: Uri = result.data?.data!!
+                val imageSize = getImageSize(imageUri)
+                val maxCanvasSize = 5 * 1024 * 1024 // 5MB
+                if (imageSize > maxCanvasSize) {
                     Toast.makeText(
-                        requireContext(), "Error processing result", Toast.LENGTH_SHORT
+                        requireContext(),
+                        "Selected image is too large",
+                        Toast.LENGTH_SHORT
                     ).show()
+                } else {
+                    viewModel.selectedImageURI.postValue(imageUri)
+                    viewModel.imageChanged = true
+                    binding.ProfileImageView.setImageURI(imageUri)
                 }
+            } catch (e: Exception) {
+                Log.d("EditMyReview", "Error: $e")
+                Toast.makeText(
+                    requireContext(), "Error processing result", Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
@@ -103,17 +84,20 @@ class EditMyProfile : Fragment() {
             }
         }
     }
+
     private fun initFields() {
         viewModel.loadUser()
-
-        binding.editTextFirstName.setText(viewModel.firstName)
-        binding.editTextLastName.setText(viewModel.lastName)
 
         binding.editTextFirstName.addTextChangedListener {
             viewModel.firstName = it.toString().trim()
         }
         binding.editTextLastName.addTextChangedListener {
             viewModel.lastName = it.toString().trim()
+        }
+
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            binding.editTextFirstName.setText(user.firstName)
+            binding.editTextLastName.setText(user.lastName)
         }
 
         viewModel.selectedImageURI.observe(viewLifecycleOwner) { uri ->
