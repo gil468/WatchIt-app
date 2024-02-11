@@ -82,7 +82,7 @@ class EditReview : Fragment() {
         binding.updateButton.setOnClickListener {
             binding.updateButton.isClickable = false
             viewModel.updateReview {
-                findNavController().navigate(R.id.action_editReview_to_myReviews)
+                findNavController().navigate(R.id.action_editReview_to_myProfile)
                 binding.updateButton.isClickable = true
             }
         }

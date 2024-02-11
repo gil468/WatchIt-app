@@ -95,7 +95,7 @@
             android:name="selectedReview"
             app:argType="com.example.watchit.data.review.Review" />
         <action
-            android:id="@+id/action_editReview_to_myReviews"
-            app:destination="@id/myReviews" />
+            android:id="@+id/action_editReview_to_myProfile"
+            app:destination="@id/profile" />
     </fragment>
 </navigation>
